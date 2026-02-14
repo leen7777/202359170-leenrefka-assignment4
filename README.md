@@ -32,6 +32,9 @@ assignment-1/
 1. Download or clone the repository
 2. Open index.html in browser
 
+## Live deployment link: 
+https://leen7777.github.io/202359170-leenrefka-assignment1/
+
 
 
 ## Testing Responsiveness
