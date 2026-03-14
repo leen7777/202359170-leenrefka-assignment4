@@ -1,236 +1,338 @@
 /**
- * Portfolio Website - JavaScript
- * Features: Theme Toggle, Time-based Greeting, Form Handling, Smooth Scrolling
+ * Portfolio Website - Assignment 2 JavaScript
+ * Features: Theme Toggle, Time-based Greeting, Personalised Greeting,
+ *           Project Filter Tabs, Live Search, Fun Facts API,
+ *           Enhanced Form Validation, Scroll Reveal, Smooth Scroll,
+ *           Navbar Scroll Effect, Back to Top
  */
-
-
+ 
 // ========================
 // THEME TOGGLE
 // ========================
 function toggleTheme() {
     const html = document.documentElement;
     const themeIcon = document.querySelector('.theme-icon');
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    // Update theme
-    html.setAttribute('data-theme', newTheme);
-    
-    // Update icon
-    if (themeIcon) {
-        themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-    }
-    
-    // Save preference to localStorage
-    localStorage.setItem('theme', newTheme);
-    
-    // Add transition effect
-    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+ 
+    html.setAttribute('data-theme', next);
+    if (themeIcon) themeIcon.textContent = next === 'dark' ? '☀️' : '🌙';
+    localStorage.setItem('theme', next);
 }
-
-// Load saved theme preference
+ 
 function loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
+    const saved = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-    
+    const theme = saved || (prefersDark ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
-    
-    const themeIcon = document.querySelector('.theme-icon');
-    if (themeIcon) {
-        themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    const icon = document.querySelector('.theme-icon');
+    if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+ 
+// ========================
+// TIME-BASED GREETING BANNER
+// ========================
+function setTimeGreeting(name) {
+    const hour = new Date().getHours();
+    let greeting, emoji;
+ 
+    if (hour < 12)      { greeting = 'Good morning';   emoji = '☀️'; }
+    else if (hour < 17) { greeting = 'Good afternoon'; emoji = '🌸'; }
+    else if (hour < 21) { greeting = 'Good evening';   emoji = '🌙'; }
+    else                { greeting = 'Good night';      emoji = '⭐'; }
+ 
+    const banner = document.getElementById('greetingBanner');
+    if (!banner) return;
+    const nameStr = name ? `, ${name}` : '';
+    banner.textContent = `${emoji} ${greeting}${nameStr}! Welcome to Leen's portfolio.`;
+}
+ 
+// ========================
+// PERSONALISED GREETING (Dynamic Content)
+// ========================
+function initPersonalisedGreeting() {
+    const input = document.getElementById('visitorName');
+    const btn   = document.getElementById('greetBtn');
+    if (!input || !btn) return;
+ 
+    // Restore saved name from localStorage
+    const savedName = localStorage.getItem('visitorName');
+    if (savedName) {
+        input.value = savedName;
+        setTimeGreeting(savedName);
+    } else {
+        setTimeGreeting('');
+    }
+ 
+    btn.addEventListener('click', () => {
+        const name = input.value.trim();
+        if (!name) { input.focus(); return; }
+        localStorage.setItem('visitorName', name);
+        setTimeGreeting(name);
+        btn.textContent = '🎉 Done!';
+        setTimeout(() => { btn.textContent = 'Say hi! 👋'; }, 2000);
+    });
+ 
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') btn.click();
+    });
+}
+ 
+// ========================
+// PROJECT FILTER TABS + LIVE SEARCH
+// ========================
+function initFilterTabs() {
+    const tabs       = document.querySelectorAll('.filter-tab');
+    const cards      = document.querySelectorAll('.project-card');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('projectSearch');
+    const clearBtn    = document.getElementById('searchClear');
+ 
+    function applyFilters(category, query) {
+        let visible = 0;
+        cards.forEach(card => {
+            const cardCat   = card.getAttribute('data-category');
+            const cardTitle = card.getAttribute('data-title').toLowerCase();
+            const cardTags  = card.getAttribute('data-tags').toLowerCase();
+ 
+            const matchCat   = category === 'all' || cardCat === category;
+            const matchQuery = !query || cardTitle.includes(query) || cardTags.includes(query);
+ 
+            if (matchCat && matchQuery) {
+                card.classList.remove('hidden');
+                visible++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+ 
+        if (emptyState) emptyState.style.display = visible === 0 ? 'block' : 'none';
+    }
+ 
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const filter = tab.getAttribute('data-filter');
+            applyFilters(filter, searchInput ? searchInput.value.trim().toLowerCase() : '');
+        });
+    });
+ 
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const active = document.querySelector('.filter-tab.active');
+            const cat = active ? active.getAttribute('data-filter') : 'all';
+            applyFilters(cat, searchInput.value.trim().toLowerCase());
+        });
+    }
+ 
+    if (clearBtn && searchInput) {
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            const active = document.querySelector('.filter-tab.active');
+            const cat = active ? active.getAttribute('data-filter') : 'all';
+            applyFilters(cat, '');
+            searchInput.focus();
+        });
     }
 }
-
+ 
 // ========================
-// CONTACT FORM HANDLING
+// FUN FACTS API
+// ========================
+function initFunFacts() {
+    const btn          = document.getElementById('factBtn');
+    const factText     = document.getElementById('factText');
+    const factCategory = document.getElementById('factCategory');
+    if (!btn) return;
+ 
+    btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading-spinner"></span> Loading…';
+        if (factText) factText.textContent = 'Fetching a fun fact for you…';
+        if (factCategory) factCategory.textContent = '';
+ 
+        try {
+            const res = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en');
+            if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+            const data = await res.json();
+            if (factText) factText.textContent = data.text;
+            if (factCategory) factCategory.textContent = '📚 Random Fact';
+        } catch (err) {
+            if (factText) factText.textContent = 'Something went wrong. Please try again!';
+            if (factCategory) factCategory.textContent = '⚠️ Error';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '🎲 Get Another Fact';
+        }
+    });
+}
+ 
+// ========================
+// CONTACT FORM — Enhanced Validation
 // ========================
 function initContactForm() {
-    const contactForm = document.getElementById('contactForm');
-    if (!contactForm) return;
-    
-    contactForm.addEventListener('submit', function(e) {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+ 
+    function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+ 
+    function setFieldError(id, msg) {
+        const el  = document.getElementById(id);
+        const err = document.getElementById(id + 'Error');
+        if (el)  el.classList.toggle('error', !!msg);
+        if (err) err.textContent = msg || '';
+    }
+ 
+    function clearErrors() {
+        ['name', 'email', 'message'].forEach(f => setFieldError(f, ''));
+    }
+ 
+    // Clear individual field errors on input
+    ['name', 'email', 'message'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', () => setFieldError(id, ''));
+    });
+ 
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // Get form values
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
+        clearErrors();
+        hideFormMessage();
+ 
+        const name    = document.getElementById('name').value.trim();
+        const email   = document.getElementById('email').value.trim();
         const message = document.getElementById('message').value.trim();
-        
-        // Validate
-        if (!name || !email || !message) {
-            showMessage('Please fill in all fields', 'error');
+        let valid = true;
+ 
+        if (!name)                    { setFieldError('name',    'Please enter your name.');               valid = false; }
+        if (!email)                   { setFieldError('email',   'Please enter your email.');              valid = false; }
+        else if (!validateEmail(email)){ setFieldError('email',  'Please enter a valid email address.');   valid = false; }
+        if (!message)                 { setFieldError('message', 'Please enter a message.');               valid = false; }
+ 
+        if (!valid) {
+            showFormMessage('Please fix the errors above and try again.', 'error');
             return;
         }
-        
-        // Show loading state
-        const submitBtn = contactForm.querySelector('.submit-btn');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span>Sending...</span>';
-        submitBtn.disabled = true;
-        
-        // Simulate sending (replace with actual backend call)
+ 
+        const btn     = document.getElementById('submitBtn');
+        const btnText = document.getElementById('submitText');
+        btn.disabled = true;
+        btnText.innerHTML = '<span class="loading-spinner"></span> Sending…';
+ 
+        // Simulate sending (replace with real backend / EmailJS in production)
         setTimeout(() => {
-            // Success
-            showMessage(`Thank you, ${name}! Your message has been received. I'll get back to you soon! 💌`, 'success');
-            
-            // Reset form
-            contactForm.reset();
-            
-            // Reset button
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                hideMessage();
-            }, 5000);
+            showFormMessage(`Thank you, ${name}! Your message has been received. I'll get back to you soon! 💌`, 'success');
+            form.reset();
+            clearErrors();
+            btn.disabled = false;
+            btnText.textContent = 'Send Message 💌';
+            setTimeout(hideFormMessage, 6000);
         }, 1500);
     });
 }
-
-function showMessage(text, type) {
-    const messageElement = document.getElementById('formMessage');
-    if (!messageElement) return;
-    
-    messageElement.textContent = text;
-    messageElement.className = `form-message ${type}`;
-    messageElement.style.display = 'block';
+ 
+function showFormMessage(text, type) {
+    const el = document.getElementById('formMessage');
+    if (!el) return;
+    el.textContent = text;
+    el.className = `form-message ${type}`;
 }
-
-function hideMessage() {
-    const messageElement = document.getElementById('formMessage');
-    if (messageElement) {
-        messageElement.style.display = 'none';
-    }
+ 
+function hideFormMessage() {
+    const el = document.getElementById('formMessage');
+    if (!el) return;
+    el.className = 'form-message';
+    el.textContent = '';
 }
-
+ 
 // ========================
-// FORM FIELD ANIMATIONS
-// ========================
-function initFormAnimations() {
-    const inputs = document.querySelectorAll('input, textarea');
-    
-    inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.style.transform = 'scale(1.01)';
-            this.style.transition = 'transform 0.2s ease, border-color 0.3s ease';
-        });
-        
-        input.addEventListener('blur', function() {
-            this.style.transform = 'scale(1)';
-        });
-    });
-}
-
-// ========================
-// SMOOTH SCROLL FOR NAVIGATION
+// SMOOTH SCROLL
 // ========================
 function initSmoothScroll() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    navLinks.forEach(link => {
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                const navHeight = document.querySelector('.navbar').offsetHeight;
-                const targetPosition = targetSection.offsetTop - navHeight;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                const navH = document.querySelector('.navbar')?.offsetHeight || 0;
+                window.scrollTo({ top: target.offsetTop - navH, behavior: 'smooth' });
             }
         });
     });
 }
-
-
+ 
 // ========================
 // NAVBAR SCROLL EFFECT
 // ========================
 function initNavbarScroll() {
     const navbar = document.querySelector('.navbar');
-    let lastScroll = 0;
-    
+    if (!navbar) return;
     window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-        
-        if (currentScroll > 100) {
-            navbar.style.boxShadow = '0 4px 30px rgba(255, 20, 147, 0.15)';
-            navbar.style.padding = '0.5rem 0';
-        } else {
-            navbar.style.boxShadow = '0 2px 20px rgba(255, 20, 147, 0.1)';
-            navbar.style.padding = '1rem 0';
-        }
-        
-        lastScroll = currentScroll;
+        const y = window.pageYOffset;
+        navbar.style.boxShadow = y > 100
+            ? '0 4px 30px rgba(255,20,147,0.15)'
+            : '0 2px 20px rgba(255,20,147,0.1)';
+        navbar.style.padding = y > 100 ? '0.5rem 0' : '1rem 0';
     });
 }
-
+ 
 // ========================
-// THEME TOGGLE BUTTON
+// SCROLL REVEAL
 // ========================
-function initThemeToggle() {
-    const themeToggle = document.getElementById('themeToggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-    }
+function initScrollReveal() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+ 
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
-
+ 
 // ========================
-// INITIALIZE ALL FEATURES
+// BACK TO TOP
 // ========================
-function init() {
-    // Load theme first (before DOM renders)
-    loadTheme();
-    
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeApp);
-    } else {
-        initializeApp();
-    }
+function initBackToTop() {
+    const btn = document.getElementById('backToTop');
+    if (btn) btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
-
-function initializeApp() {
-    console.log('🚀 Portfolio loaded successfully!');
-    
-    // Initialize all features
-    initThemeToggle();
-    initContactForm();
-    initFormAnimations();
-    initSmoothScroll();
-    initNavbarScroll();
-    
-}
-
-// Start the application
-init();
-
+ 
 // ========================
-// UTILITY FUNCTIONS
+// UTILITY: DEBOUNCE
 // ========================
-
-// Debounce function for performance
 function debounce(func, wait) {
     let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
+    return function(...args) {
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(() => func(...args), wait);
     };
 }
-
-// Log performance metrics (optional)
-window.addEventListener('load', () => {
-    const loadTime = performance.now();
-    console.log(`⚡ Page loaded in ${loadTime.toFixed(2)}ms`);
+ 
+// ========================
+// INIT
+// ========================
+loadTheme(); // Load theme before DOM renders
+ 
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Portfolio v2 loaded!');
+ 
+    document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+ 
+    initPersonalisedGreeting();
+    initFilterTabs();
+    initFunFacts();
+    initContactForm();
+    initSmoothScroll();
+    initNavbarScroll();
+    initScrollReveal();
+    initBackToTop();
+ 
+    window.addEventListener('load', () => {
+        console.log(`⚡ Page loaded in ${performance.now().toFixed(2)}ms`);
+    });
 });
