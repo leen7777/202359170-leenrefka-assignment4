@@ -6,10 +6,19 @@
     <meta name="description" content="Professional Portfolio - Web Developer">
     <meta name="author" content="Leen Refka">
     <title>Leen Refka | Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
  
+    <!-- Admin Mode Bar (hidden by default) -->
+    <div id="adminBar" style="display:none;">
+        <span>🔒 Admin Mode Active</span>
+        <span class="admin-hint">You are viewing your portfolio as an administrator.</span>
+    </div>
+
     <!-- Greeting Banner -->
     <div id="greetingBanner">✨ Welcome! Loading your personalized greeting…</div>
  
@@ -23,12 +32,16 @@
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#projects" class="nav-link">Projects</a></li>
                 <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#github" class="nav-link">GitHub</a></li>
                 <li><a href="#facts" class="nav-link">Fun Facts</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
             </ul>
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                <span class="theme-icon">🌙</span>
-            </button>
+            <div class="nav-actions">
+                <button class="login-btn" id="loginBtn" aria-label="Toggle admin mode">👤 Guest</button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
         </div>
     </nav>
  
@@ -37,7 +50,7 @@
         <div class="container">
             <div class="about-content">
                 <div class="profile-image">
-                    <img src="assets/images/profile.jpg" alt="Leen Refka - CS Student">
+                    <img src="assets/images/profile.jpg" alt="Leen Refka - CS Student" loading="lazy">
                 </div>
  
                 <h1 class="tagline">Hi, I'm <span class="highlight">Leen</span></h1>
@@ -86,12 +99,20 @@
             <h2 class="section-title">My Projects</h2>
             <p class="section-subtitle">Check out some of my recent work</p>
  
-            <!-- NEW: Filter Tabs -->
+            <!-- Filter Tabs -->
             <div class="filter-tabs" role="group" aria-label="Filter projects by category">
                 <button class="filter-tab active" data-filter="all">All</button>
                 <button class="filter-tab" data-filter="ml">Machine Learning</button>
                 <button class="filter-tab" data-filter="web">Web</button>
                 <button class="filter-tab" data-filter="python">Python</button>
+            </div>
+
+            <!-- Sort Controls -->
+            <div class="sort-controls" role="group" aria-label="Sort projects">
+                <span class="sort-label">Sort:</span>
+                <button class="sort-btn active" data-sort="default">Default</button>
+                <button class="sort-btn" data-sort="az">A → Z</button>
+                <button class="sort-btn" data-sort="za">Z → A</button>
             </div>
  
             <!-- NEW: Empty state message -->
@@ -154,6 +175,20 @@
         </div>
     </section>
  
+    <!-- GitHub Repos Section -->
+    <section id="github" class="github-section">
+        <div class="container">
+            <h2 class="section-title">GitHub Repositories</h2>
+            <p class="section-subtitle">My latest public work on GitHub</p>
+            <div id="githubRepos" class="github-grid">
+                <div class="github-loading">
+                    <span class="loading-spinner github-spinner"></span>
+                    <p>Loading repositories…</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Skills Section -->
     <section id="skills" class="skills-section">
         <div class="container">
@@ -236,7 +271,7 @@
                         <p class="field-error" id="messageError"></p>
                     </div>
  
-                    <button type="submit" class="submit-btn">
+                    <button type="submit" class="submit-btn" id="submitBtn">
                         <span id="submitText">Send Message</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -279,9 +314,11 @@
         <div class="container">
             <div class="footer-content">
                 <p>&copy; MyPortfolio.</p>
+                <p class="visit-timer" id="visitTimer" aria-live="polite">You've been here for 0s</p>
                 <div class="footer-links">
                     <a href="#about">About</a>
                     <a href="#projects">Projects</a>
+                    <a href="#github">GitHub</a>
                     <a href="#contact">Contact</a>
                 </div>
             </div>
