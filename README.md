@@ -3,7 +3,6 @@
 
 A complete, responsive personal portfolio web application built with HTML, CSS, and JavaScript — deployed and production-ready.
 
-**Live Demo:** [GitHub Pages / Netlify link here once deployed]
 
 ---
 
