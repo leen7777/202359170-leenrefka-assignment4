@@ -1,244 +1,210 @@
 # Technical Documentation
+**Student:** Leen Refka | **ID:** 202359170 | **Course:** SWE 363
+
+---
 
 ## 1. Overview
 
-This project is a responsive personal portfolio website developed using HTML, CSS, and JavaScript.  
-The goal was to implement a clean, structured, and interactive web application while following best practices in file organization and code quality.
+This is a fully responsive personal portfolio web application built with HTML, CSS, and JavaScript. It serves as the final submission for SWE 363, combining all features developed across four assignments into a single polished, deployed application.
 
-The website includes:
-
-About section with personalized greeting input
-Dynamic greeting banner (time-based)
-Projects section with filter tabs and live search
-Skills section
-Fun Facts section (public API)
-Contact form with validation
-Dark/Light theme toggle with localStorage
-Smooth scrolling navigation
-Scroll reveal animations
-Responsive layout
-
-
+**Sections:**
+- About / Hero — profile, typing animation, resume download, social links
+- Experience & Education — two-column timeline
+- Projects — filterable, sortable, searchable grid
+- Skills — category cards + animated proficiency bars
+- GitHub Repos — live GitHub API integration
+- Fun Facts — public API with loading/error states
+- Contact — validated contact form
 
 ---
 
 ## 2. Technologies Used
 
-- **HTML** → Structure and semantic layout
-- **CSS** → Styling, layout, responsiveness, theming
-- **JavaScript ** → Interactivity and dynamic features
-- **Git & GitHub** → Version control
-- **GitHub Pages**  → Deployment
+| Technology | Purpose |
+|------------|---------|
+| HTML5 | Semantic structure, ARIA accessibility |
+| CSS3 | Layout (Grid/Flex), custom properties, animations |
+| Vanilla JavaScript (ES2020) | All interactivity and API calls |
+| Google Fonts | Cormorant Garamond + DM Sans |
+| GitHub REST API | Live repository display |
+| Useless Facts API | Random fun facts |
+| Git & GitHub | Version control |
+| GitHub Pages / Netlify | Deployment |
 
 ---
 
 ## 3. Project Structure
 
-assignment-1/
+```
+202359170-leenrefka-assignment1/
+├── README.md
 ├── index.html
 ├── css/
-│ └── styles.css
+│   └── styles.css
 ├── js/
-│ └── script.js
+│   └── script.js
 ├── assets/
-│ └── images/
+│   └── images/
+│       └── profile.jpg
 ├── docs/
-│ ├── ai-usage-report.md
-│ └── technical-documentation.md
-└── README.md
+│   ├── ai-usage-report.md
+│   └── technical-documentation.md
+└── presentation/
+    ├── slides.pdf
+    └── demo-video.mp4
+```
 
+**Separation of concerns:**
+- `index.html` → structure and content only
+- `css/styles.css` → all visual styling with CSS custom properties
+- `js/script.js` → all behaviour, organized as independent `init*` functions
 
-### Structure Rationale
-
-The project follows the principle of separation of concerns:
-
-- HTML → Content structure
-- CSS → Styling and layout
-- JavaScript → Behavior and interactivity
-
-This ensures maintainability and scalability.
-
-
+---
 
 ## 4. HTML Structure
 
-The HTML document uses semantic elements:
+Semantic elements used throughout:
+- `<nav>` with `role="navigation"` and `aria-label`
+- `<section>` for each content group, each with an `id` for smooth scroll targeting
+- `<form>` with `novalidate` (custom JS validation) and `autocomplete` hints
+- `<footer>` with visit timer and navigation links
+- `<button id="backToTop">` — fixed floating action button
 
-- `<nav>` for navigation
-- `<section>` for content grouping
-- `<form>` for contact form
-- `<footer>` for bottom information
+**Accessibility:**
+- All buttons have `aria-label`
+- Dynamic regions use `aria-live="polite"` (greeting banner, fact box, form message)
+- Images have descriptive `alt` text
+- Hamburger uses `aria-expanded` and `aria-controls`
+- Form errors have `role="alert"`
 
-Each major section has an `id` to allow smooth scrolling navigation.
-
-Accessibility considerations:
-- `aria-label` attributes for icons
-- `alt` text for images
-- Required form inputs
--Descriptive placeholder text on all inputs
-
-
-
+---
 
 ## 5. CSS Architecture
 
-### 5.1 CSS Variables
+### 5.1 Custom Properties (Variables)
 
-CSS custom properties are defined under :root to support:
-
-Light and dark themes
-Consistent spacing system (--spacing-xs through --spacing-xl)
-Typography (--font-body, --font-heading)
-Color system (--accent, --bg-primary, --text-primary, etc.)
-
-
-This makes the theme toggle efficient and scalable.
-
-Example:
+All design tokens are defined once in `:root` and overridden for dark mode via `[data-theme="dark"]`:
 
 ```css
 :root {
-  --bg-primary: #ffffff;
-  --accent: #ff1493;
+    --bg-primary: #ffffff;
+    --accent:     #ff1493;
+    --font-body:  'DM Sans', sans-serif;
+    --spacing-md: 2rem;
+    --radius:     15px;
+    --transition: 0.3s ease;
 }
-Dark theme overrides are applied using:
+```
 
-[data-theme="dark"] { ... }
-5.2 Layout System
-Flexbox → Navigation and alignment
+This makes theme switching a single attribute change on `<html>` and ensures every component inherits consistent values.
 
-CSS Grid → Projects and skills sections
+### 5.2 Layout System
 
-Media queries → Responsive behavior
+- **Flexbox** → navbar, hero actions, footer, form rows
+- **CSS Grid** → projects grid, skills grid, contact content, github grid
+- **`auto-fit` + `minmax`** → responsive grid columns that reflow without media queries
+- **Media queries** at 968px, 768px, and 480px for targeted adjustments
 
+### 5.3 Animations
 
-The layout adapts for desktop, tablet, and mobile devices.
+| Animation | Trigger | Purpose |
+|-----------|---------|---------|
+| `fadeUp` + `floatIn` | Page load (CSS `animation`) | Hero entrance |
+| `.reveal` + IntersectionObserver | Scroll | Sections fade in on viewport entry |
+| `prof-bar-fill` width transition | IntersectionObserver | Skill bars animate to level |
+| `blink` | CSS `animation` | Typing cursor blink |
+| `spin` | CSS `animation` | Loading spinner |
 
-5.3 Animations
+All transitions are ≤ 0.8s with `ease` or `cubic-bezier` timing.
 
-keyframes fadeUp → Sections and content fade in upward on load
-keyframes floatIn → Profile image entrance animation
-keyframes spin → Loading spinner for the Fun Facts button
-.reveal class + IntersectionObserver → Scroll-triggered fade-in for all major sections
-CSS transitions on all interactive elements (buttons, cards, nav links, social icons)
+---
 
-All animations use ease or linear timing and are kept under 0.8s to avoid feeling sluggish.
+## 6. JavaScript Modules
 
+Each feature is an isolated `init*` function called in `DOMContentLoaded`. `loadTheme()` runs before the DOM to prevent flash of unstyled theme.
 
-6. JavaScript Functionality
-6.1 Theme Toggle
+### 6.1 Theme Toggle
+Toggles `data-theme` on `<html>`, saves to `localStorage`, restores on load. Reads `prefers-color-scheme` as fallback.
 
-Toggles data-theme="dark" on the <html> element
-Saves the user's preference using localStorage
-Reads the saved preference on page load and applies it automatically
-Updates the toggle button icon between 🌙 and ☀️
+### 6.2 Greeting Banner + Personalised Greeting
+- `setTimeGreeting(name)` — picks morning/afternoon/evening/night based on `new Date().getHours()`
+- Visitor name persisted to `localStorage` and restored on revisit
 
-6.2 Greeting Banner
+### 6.3 Typing Animation
+Pure-JS typewriter: iterates through a `phrases[]` array, types character by character, pauses, then deletes before moving to the next phrase. No external library.
 
-Runs on page load
-Reads the current hour using new Date().getHours()
-Displays a time-appropriate greeting: Good morning / Good afternoon / Good evening / Good night
-Updates the #greetingBanner element's text content dynamically
+### 6.4 Hamburger Mobile Menu
+Toggles `.open` on `<ul class="nav-menu">`, sets `aria-expanded`, and closes on outside click or nav-link click.
 
-6.3 Personalized Greeting
+### 6.5 Scroll Progress Bar
+`scroll` event listener calculates `(scrollY / (scrollHeight − innerHeight)) × 100` and sets the `#scrollProgress` element's `width`.
 
-User enters their name in the #visitorName input
-On clicking the "Say hi!" button, the banner updates to include their name
-Example: "✨ Good evening, Leen! Welcome to my portfolio."
+### 6.6 Project Filter + Sort + Search
+All three controls are composed in a single `applyFilters(category, query)` function:
+1. Re-orders cards in the DOM via `Array.sort` + `appendChild`
+2. Applies `.hidden` to non-matching cards
+3. Shows `#emptyState` if zero cards are visible
 
-6.4 Project Filter Tabs
+### 6.7 Skill Proficiency Bars
+`IntersectionObserver` (threshold 0.3) watches each `.prof-item`. When it enters the viewport, the fill div's `width` is set to `data-level + '%'`, triggering the CSS transition.
 
-Each project card has a data-category attribute (e.g. ml, web, python)
-Clicking a filter tab adds the .active class to that tab and removes it from others
-Cards not matching the selected category receive the .hidden class (display: none)
-"All" tab shows all cards
-If no cards are visible, the #emptyState message is displayed
+### 6.8 GitHub Repos API
+`fetch('https://api.github.com/users/leen7777/repos?sort=updated&per_page=6')` — renders repo cards with language colour dots and star counts. Shows a friendly error card if the API is unavailable.
 
-6.5 Live Project Search
+### 6.9 Fun Facts API
+`fetch('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en')` — disables button during request, shows spinner, renders fact or error message.
 
-Listens for input events on the #projectSearch field
-On each keypress, reads the search value and converts it to lowercase
-Checks each card's data-title and data-tags attributes against the search value
-Non-matching cards receive the .hidden class
-Works in combination with the active filter tab
-A clear button (✕) resets the search field and restores all cards
+### 6.10 Contact Form
+Client-side validation with per-field inline errors. Submission simulated with `setTimeout`. Uses `aria-live` for the success/error message region.
 
-6.6 Fun Facts API
+### 6.11 Scroll Reveal
+`IntersectionObserver` (threshold 0.1) adds `.visible` to `.reveal` elements as they enter the viewport. Observer disconnects after first trigger for performance.
 
-Fetches from a public facts API on button click
-Shows a loading spinner inside the button while the request is in progress
-On success: displays the fact text and category inside #factBox
-On failure: displays a friendly error message so the user is never left without feedback
-Button is disabled during loading to prevent duplicate requests
+### 6.12 Back to Top
+Shows `.back-to-top` button (CSS `opacity` + `pointer-events`) when `pageYOffset > 400`. Calls `window.scrollTo({ top: 0, behavior: 'smooth' })`.
 
-6.7 Contact Form Handling
+---
 
-Validates all required fields (name, email, message) on submit
-Shows inline per-field error messages using .field-error elements
-Highlights invalid inputs with a red border (.error class)
-Simulates a submission delay with a loading state on the button
-Displays a success message on completion and resets the form
-No backend is implemented — submission is simulated client-side
+## 7. Performance Considerations
 
-6.8 Smooth Scrolling
+- `loading="lazy"` on the profile image
+- Google Fonts loaded via `<link rel="preconnect">` to reduce DNS lookup time
+- `{ passive: true }` on scroll event listeners to avoid blocking the main thread
+- `IntersectionObserver` instead of scroll polling for reveal and skill bars
+- No external JS libraries — zero dependency bundle overhead
+- CSS custom properties prevent style duplication across theme variants
 
-Navigation links prevent default anchor behavior
-Scroll position accounts for the sticky navbar height using offsetHeight
-window.scrollTo() is called with behavior: 'smooth'
+---
 
-6.9 Scroll Reveal
+## 8. Responsiveness & Testing
 
-All major sections have the .reveal class applied in HTML
-An IntersectionObserver watches each .reveal element
-When an element enters the viewport, the .visible class is added, triggering the CSS fade-in transition
-The observer disconnects from each element after it has been revealed
+Tested manually using:
+- Chrome DevTools device simulation (iPhone SE, iPad, 1440px desktop)
+- Firefox responsive design mode
+- Manual viewport resize
 
+Breakpoints:
+- `≤ 968px` → contact grid collapses, skills layout stacks
+- `≤ 768px` → hamburger menu activated, timeline collapses to single column
+- `≤ 480px` → font size reduced, back-to-top repositioned
 
-7. Responsiveness & Testing
-The website was tested using:
+---
 
-Manual browser resizing
+## 9. Known Limitations
 
-Chrome DevTools device simulation
+| Limitation | Status |
+|------------|--------|
+| Contact form doesn't send real emails | Simulated client-side; EmailJS integration is planned |
+| GitHub API has rate limiting (60 req/hour unauthenticated) | Shows error card if limit hit |
+| Fun Facts API is an external service | Graceful error shown if unavailable |
+| Resume PDF must be manually added to `assets/` | File excluded from repo for size |
 
-Multiple viewport sizes
+---
 
-The design ensures:
+## 10. Future Improvements
 
-No horizontal overflow
-
-Proper stacking on smaller screens
-
-
-
-8. Code Quality Practices
-Consistent indentation and formatting
-
-Logical file organization
-
-Descriptive class names
-
-Comments explaining major sections
-
-Removal of unused code
-
-No console errors
-
-9. Future Improvements
-Possible enhancements:
-
-Backend integration for contact form
-
-
-
-10. Data Handling
-MethodUsagelocalStorageSaves and retrieves dark/light theme preferencefetch() APIRetrieves fun facts from a public external APIDOM attributesdata-category and data-tags used for client-side filtering and searchForm stateManaged entirely in JavaScript with no backend
-
-
-
-11. Known Limitations
-
-The contact form does not send real emails — submission is simulated client-side only
-The profile image must be manually added to assets/images/ as it is not included in the repository
-The Fun Facts API depends on an external service — if the API is down, an error message is shown
-
+- Add EmailJS or Formspree for real contact form submission
+- Implement a blog/notes section using a headless CMS
+- Add project detail modals for richer showcase
+- Add multilingual support (Arabic / English toggle)
+- Set up CI/CD with GitHub Actions for automatic deployment

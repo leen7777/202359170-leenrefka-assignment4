@@ -1,4 +1,5 @@
 # AI Usage Report
+**Student:** Leen Refka | **ID:** 202359170 | **Course:** SWE 363
 
 ---
 
@@ -64,7 +65,7 @@ Claude was used for Assignment 3 to:
 - **Project sorting** — Claude explained how to re-order DOM nodes by appending sorted card elements back into the grid, and how to compose sorting with the existing filter+search system without duplicating logic.
 - **Visit timer** — Claude suggested using `Date.now()` with `setInterval` to compute elapsed time and format it as minutes and seconds, and placing it in the footer with `aria-live` for accessibility.
 - **Login/logout state** — Claude helped implement the admin mode toggle using `localStorage`, showing/hiding the admin bar, and persisting state across page reloads.
-- **Performance improvements** — Claude identified the missing Google Fonts `<link>` tags (the fonts were referenced in CSS but never loaded), suggested adding `loading="lazy"` to the profile image, and spotted a bug where `submitBtn` had no `id` attribute in the HTML despite being referenced in JavaScript.
+- **Performance improvements** — Claude identified the missing Google Fonts `<link>` tags, suggested adding `loading="lazy"` to the profile image, and spotted a bug where `submitBtn` had no `id` attribute in the HTML despite being referenced in JavaScript.
 - **Code review** — Claude reviewed the existing codebase and identified duplicate CSS blocks from Assignment 2 that bloat the stylesheet.
 
 ### 2. Benefits & Challenges
@@ -76,22 +77,71 @@ Claude was used for Assignment 3 to:
 
 **Challenges**
 - AI-generated language colour maps were incomplete; I had to cross-reference GitHub's own linguist data and trim the list to relevant languages.
-- The suggested GitHub API endpoint needed adjustment — the default sort and `per_page` parameters had to be tuned to show the most relevant repos rather than all of them.
-- I had to carefully integrate the new sort logic into the existing `initFilterTabs()` function myself, rather than accepting a full replacement, to avoid accidentally breaking the filter and search features.
+- The suggested GitHub API endpoint needed adjustment — the default sort and `per_page` parameters had to be tuned to show the most relevant repos.
+- I had to carefully integrate the new sort logic into the existing `initFilterTabs()` function myself to avoid accidentally breaking the filter and search features.
 
 ### 3. Learning Outcomes
 
 From Assignment 3, I learned:
 - How to consume a real REST API (GitHub API) including reading response status codes and handling rate-limiting gracefully.
-- How JavaScript's `Array.prototype.sort` with `localeCompare` handles alphabetical ordering correctly across different character sets.
+- How JavaScript's `Array.prototype.sort` with `localeCompare` handles alphabetical ordering correctly.
 - The importance of DOM order vs. visual order — re-appending elements is a valid and efficient way to reorder visible content without re-rendering.
-- How `localStorage` can be used for lightweight state persistence (login state, theme, visitor name) without any backend.
+- How `localStorage` can be used for lightweight state persistence without any backend.
 - Performance fundamentals: lazy image loading, font preloading with `preconnect`, and why duplicate CSS rules increase file size and can cause unexpected specificity conflicts.
 
 ### 4. Responsible Use & Modifications
 
 All AI-generated code was reviewed line by line before use. Key modifications I made:
 - Simplified the language colour map to only the languages relevant to my own repos.
-- Rewrote the sort logic to integrate cleanly with the existing filter/search state rather than duplicating the `applyFilters` call.
-- Adjusted the admin bar UI to match the existing pink theme rather than using the AI's generic grey suggestion.
+- Rewrote the sort logic to integrate cleanly with the existing filter/search state.
+- Adjusted the admin bar UI to match the existing pink theme.
 - Tested every new feature in Chrome DevTools including simulating a failed network request (offline mode) to verify error states work correctly.
+
+---
+
+## Assignment 4
+
+### 1. Tools Used & Use Cases
+
+**Claude (Anthropic)**
+
+Claude was the primary tool for Assignment 4:
+
+| Feature | How Claude Was Used |
+|---------|---------------------|
+| Typing animation | Generated the pure-JS typewriter with configurable speed, pause, and delete phases |
+| Hamburger menu | Produced the accessible toggle with `aria-expanded`, outside-click dismissal, and keyboard support |
+| Scroll progress bar | Wrote the scroll event listener calculating `scrollY / (docHeight − viewportHeight)` as a percentage |
+| Skill proficiency bars | Implemented `IntersectionObserver`-based fill animation triggered on viewport entry |
+| Experience timeline | Designed the alternating left/right CSS timeline with a responsive single-column mobile fallback |
+| CSS cleanup | Identified and removed ~150 lines of duplicate CSS rules carried over from previous assignments |
+| Accessibility review | Audited HTML and suggested `role`, `aria-live`, `aria-label`, and `aria-controls` improvements |
+| Documentation | Helped draft this report and the updated README |
+
+### 2. Benefits & Challenges
+
+**Benefits**
+- Claude produced working code for the `IntersectionObserver` skill bars in one pass, eliminating hours of manual implementation.
+- Accessibility audit caught missing `aria-expanded` on the hamburger and `role="status"` on the fact box — details I would likely have missed.
+- The CSS duplicate-rule cleanup removed specificity conflicts that were causing subtle visual inconsistencies in dark mode.
+
+**Challenges**
+- Claude's initial timeline mobile breakpoint collapsed the layout incorrectly — the dot was floating away from the card. I had to inspect and fix the `left` and `padding-left` values manually.
+- In one session, Claude suggested adding a full project modal system; I decided against it as it exceeded assignment scope and would have bloated the codebase unnecessarily.
+- The hamburger outside-click handler initially used `mousedown` which interfered with the button's own click event on touch devices — I switched to `click` after testing on mobile.
+
+### 3. Learning Outcomes
+
+- Learned how `IntersectionObserver` works for scroll-triggered effects — significantly more performant than polling scroll events.
+- Understood the accessibility semantics of `aria-expanded` and `aria-controls` for toggle-controlled regions.
+- Practised evaluating AI output critically: checking logic, testing edge cases (empty state, slow API, mobile viewport), and adapting generated styles to fit an existing design system.
+- Improved understanding of CSS specificity by working through the duplicate-rule cleanup.
+
+### 4. Responsible Use & Modifications
+
+Every piece of AI-generated code was:
+1. **Read and understood** before being added — no blind copy-paste.
+2. **Tested** in Chrome and Firefox on both desktop and mobile viewport sizes.
+3. **Modified** to match the existing design system (CSS variables, spacing tokens, font families).
+4. **Reviewed for correctness** — edge cases such as no-name greeting, slow network, and zero GitHub repos were all verified.
+5. **Documented** in this report with specific use case, outcome, and any changes made.
