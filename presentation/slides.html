@@ -3,521 +3,569 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leen Refka — Portfolio Presentation</title>
+<title>Leen Refka — Portfolio Presentation | SWE 363</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --accent:   #ff1493;
-    --accent2:  #c71585;
-    --dark:     #0a0a0a;
-    --card:     #1a1a1a;
-    --text:     #ffffff;
-    --muted:    #ffc0cb;
-    --border:   rgba(255,20,147,0.3);
-    --font-h:   'Cormorant Garamond', serif;
-    --font-b:   'DM Sans', sans-serif;
-  }
+:root {
+  --accent:  #ff1493;
+  --accent2: #c71585;
+  --dark:    #0a0a0a;
+  --card:    #141414;
+  --card2:   #1e1e1e;
+  --text:    #ffffff;
+  --muted:   #ffc0cb;
+  --border:  rgba(255,20,147,0.25);
+  --green:   #22c55e;
+  --red:     #ff6b6b;
+  --fh: 'Cormorant Garamond', serif;
+  --fb: 'DM Sans', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--dark);color:var(--text);font-family:var(--fb);}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+/* ─── DECK ─── */
+.deck{position:relative;width:100vw;height:100vh;}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:2.5rem 5rem;
+  opacity:0;pointer-events:none;
+  transition:opacity .45s ease,transform .45s ease;
+  transform:translateX(50px);
+}
+.slide.active{opacity:1;pointer-events:auto;transform:translateX(0);}
+.slide.out{transform:translateX(-50px);}
 
-  html { font-size: 16px; }
+/* grid bg */
+.slide::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:55px 55px;opacity:.25;
+}
+/* pink glow */
+.slide::after{
+  content:'';position:absolute;pointer-events:none;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,20,147,.09) 0%,transparent 70%);
+}
 
-  body {
-    font-family: var(--font-b);
-    background: var(--dark);
-    color: var(--text);
-    overflow: hidden;
-    height: 100vh;
-  }
+/* ─── NAV ─── */
+.nav{
+  position:fixed;bottom:1.8rem;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:.8rem;z-index:100;
+  background:rgba(20,20,20,.92);border:1px solid var(--border);
+  border-radius:50px;padding:.55rem 1.1rem;backdrop-filter:blur(12px);
+}
+.nav button{
+  background:none;border:none;color:var(--muted);font-size:1rem;
+  cursor:pointer;padding:.3rem .6rem;border-radius:8px;
+  transition:all .2s;font-family:var(--fb);
+}
+.nav button:hover{background:var(--border);color:#fff;}
+.nav button:disabled{opacity:.25;cursor:default;}
+#ctr{font-size:.82rem;color:var(--muted);min-width:55px;text-align:center;}
 
-  /* ── SLIDES ── */
-  .deck { width: 100vw; height: 100vh; position: relative; }
+/* section label */
+.section-label{
+  position:absolute;top:1.4rem;left:2.5rem;
+  font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);opacity:.75;
+}
+.slide-num{
+  position:absolute;top:1.4rem;right:2.5rem;
+  font-size:.72rem;color:rgba(255,192,203,.45);letter-spacing:.06em;
+}
+.hint{position:fixed;bottom:1.4rem;right:2rem;font-size:.7rem;color:rgba(255,192,203,.3);}
 
-  .slide {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 3rem 5rem;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    transform: translateX(60px);
-  }
-  .slide.active {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(0);
-  }
-  .slide.prev { transform: translateX(-60px); }
+/* ─── TYPOGRAPHY ─── */
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem;}
+h1{font-family:var(--fh);font-size:3.8rem;line-height:1.1;margin-bottom:.8rem;}
+h2{font-family:var(--fh);font-size:2.6rem;line-height:1.15;margin-bottom:.9rem;}
+h3{font-family:var(--fh);font-size:1.35rem;color:var(--accent);margin-bottom:.35rem;}
+p{color:var(--muted);line-height:1.7;font-size:.95rem;}
+.hl{color:var(--accent);}
+.divider{width:50px;height:3px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:2px;margin:.7rem 0 1.1rem;}
 
-  /* Subtle grid background */
-  .slide::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    opacity: 0.35;
-  }
+/* ─── PILL ─── */
+.pill{display:inline-block;padding:.28rem .85rem;border-radius:50px;font-size:.78rem;font-weight:600;margin:.2rem;border:1px solid var(--border);background:rgba(255,20,147,.1);color:var(--accent);}
+.pill.s{background:var(--accent);color:#fff;border-color:var(--accent);}
+.pill.g{background:rgba(34,197,94,.12);color:var(--green);border-color:rgba(34,197,94,.3);}
+.pill.r{background:rgba(255,107,107,.12);color:var(--red);border-color:rgba(255,107,107,.3);}
 
-  /* Pink blob accent */
-  .slide::after {
-    content: '';
-    position: absolute;
-    width: 500px; height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,20,147,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
+/* ─── CARD ─── */
+.card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem;}
+.card.accent{border-color:var(--accent);}
+.card-icon{font-size:1.7rem;margin-bottom:.4rem;}
 
-  /* ── NAVIGATION ── */
-  .nav {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background: rgba(26,26,26,0.9);
-    border: 1px solid var(--border);
-    border-radius: 50px;
-    padding: 0.6rem 1.2rem;
-    backdrop-filter: blur(10px);
-    z-index: 100;
-  }
-  .nav button {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 1.1rem;
-    cursor: pointer;
-    padding: 0.3rem 0.6rem;
-    border-radius: 8px;
-    transition: all 0.2s;
-    font-family: var(--font-b);
-  }
-  .nav button:hover { background: var(--border); color: white; }
-  .nav button:disabled { opacity: 0.3; cursor: default; }
-  #slideCounter { font-size: 0.85rem; color: var(--muted); min-width: 60px; text-align: center; }
+/* ─── GRID LAYOUTS ─── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%;max-width:900px;position:relative;z-index:1;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;width:100%;max-width:900px;position:relative;z-index:1;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.85rem;width:100%;max-width:960px;position:relative;z-index:1;}
+.side{display:grid;grid-template-columns:1fr 1.5fr;gap:3rem;width:100%;max-width:920px;position:relative;z-index:1;align-items:start;}
 
-  /* Keyboard hint */
-  .hint {
-    position: fixed;
-    top: 1.2rem;
-    right: 1.5rem;
-    font-size: 0.75rem;
-    color: rgba(255,192,203,0.5);
-    font-family: var(--font-b);
-  }
+/* ─── FEATURE ROW ─── */
+.feat{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.55rem;}
+.feat-icon{font-size:1.15rem;flex-shrink:0;margin-top:.05rem;}
+.feat-text h4{font-size:.95rem;font-weight:600;margin-bottom:.1rem;}
+.feat-text p{font-size:.83rem;}
 
-  /* Slide number pill */
-  .slide-num {
-    position: absolute;
-    top: 1.5rem;
-    right: 2rem;
-    font-size: 0.78rem;
-    color: var(--accent);
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    font-family: var(--font-b);
-  }
+/* ─── CHALLENGE TABLE ─── */
+.ch-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.6rem;}
+.ch-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.2rem;}
+.ch-label.p{color:var(--red);}
+.ch-label.s{color:var(--green);}
+.ch-val{font-size:.85rem;color:var(--muted);}
 
-  /* ── TYPOGRAPHY ── */
-  .tag-line {
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
-  h1 { font-family: var(--font-h); font-size: 4rem; line-height: 1.1; margin-bottom: 1rem; }
-  h2 { font-family: var(--font-h); font-size: 2.8rem; margin-bottom: 1.2rem; }
-  h3 { font-family: var(--font-h); font-size: 1.6rem; margin-bottom: 0.5rem; color: var(--accent); }
-  p  { color: var(--muted); line-height: 1.7; font-size: 1rem; }
-  .highlight { color: var(--accent); }
+/* ─── PROGRESS BARS ─── */
+.prog{margin-bottom:.75rem;}
+.prog-top{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.3rem;}
+.prog-top span:last-child{color:var(--accent);font-weight:700;}
+.prog-track{height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),#ff85c8);border-radius:4px;}
 
-  /* ── CARDS GRID ── */
-  .cards {
-    display: grid;
-    gap: 1rem;
-    width: 100%;
-    max-width: 900px;
-    position: relative;
-    z-index: 1;
-  }
-  .cards.cols-2 { grid-template-columns: 1fr 1fr; }
-  .cards.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+/* ─── TIMELINE ─── */
+.tl{display:flex;flex-direction:column;gap:.7rem;max-width:760px;width:100%;position:relative;z-index:1;}
+.tl-row{display:flex;gap:.9rem;}
+.tl-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:.45rem;flex-shrink:0;}
+.tl-row h4{font-size:.95rem;font-weight:600;margin-bottom:.1rem;}
+.tl-row p{font-size:.83rem;}
 
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.3rem 1.5rem;
-  }
-  .card-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
-  .card p { font-size: 0.88rem; margin-top: 0.3rem; }
+/* ─── COVER SLIDE ─── */
+#s1{text-align:center;}
+.avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:2.8rem;margin:0 auto 1.3rem;box-shadow:0 0 50px rgba(255,20,147,.35);}
+.sub-title{font-size:1.1rem;color:var(--muted);margin-bottom:1.4rem;}
+.meta-pills{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;}
+.time-badge{display:inline-block;background:rgba(255,20,147,.12);border:1px solid var(--border);border-radius:8px;padding:.5rem 1.2rem;font-size:.8rem;color:var(--muted);margin-top:1.5rem;}
 
-  /* ── PILL / BADGE ── */
-  .pill {
-    display: inline-block;
-    background: rgba(255,20,147,0.15);
-    color: var(--accent);
-    border: 1px solid var(--border);
-    border-radius: 50px;
-    padding: 0.3rem 0.9rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin: 0.2rem;
-  }
-  .pill.solid { background: var(--accent); color: white; border-color: var(--accent); }
-
-  /* ── TIMELINE ── */
-  .tl { display: flex; flex-direction: column; gap: 0.8rem; max-width: 700px; width: 100%; position: relative; z-index:1; }
-  .tl-item { display: flex; gap: 1rem; align-items: flex-start; }
-  .tl-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; margin-top: 0.45rem; flex-shrink: 0; }
-  .tl-body h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.1rem; }
-  .tl-body p  { font-size: 0.85rem; }
-
-  /* ── FEATURE LIST ── */
-  .feat-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; position: relative; z-index:1; }
-  .feat-list li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.95rem; }
-  .feat-list li span.icon { font-size: 1.2rem; flex-shrink: 0; }
-
-  /* ── SLIDE-SPECIFIC ── */
-  /* Slide 1 — Cover */
-  #s1 { text-align: center; }
-  #s1 .avatar {
-    width: 110px; height: 110px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 3rem;
-    margin: 0 auto 1.5rem;
-    box-shadow: 0 0 40px rgba(255,20,147,0.4);
-  }
-  #s1 .sub { font-size: 1.15rem; color: var(--muted); margin-bottom: 1.5rem; }
-  #s1 .meta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-
-  /* Slide 2 — About */
-  #s2 { align-items: flex-start; }
-  #s2 .layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 3rem; width: 100%; max-width: 900px; position: relative; z-index:1; }
-
-  /* Slide 6 — Innovative features */
-  .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; width:100%; max-width:860px; position:relative; z-index:1; }
-
-  /* Slide 8 — Challenges */
-  .challenge-list { display: flex; flex-direction: column; gap: 1rem; max-width: 780px; width:100%; position:relative; z-index:1; }
-  .challenge-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .challenge-item .prob { color: var(--muted); font-size: 0.88rem; }
-  .challenge-item .sol  { color: #a8f0a8; font-size: 0.88rem; }
-  .challenge-item .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.2rem; }
-  .challenge-item .label.p { color: #ff8080; }
-  .challenge-item .label.s { color: #22c55e; }
-
-  /* Slide 9 — Future */
-  .future-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.9rem; max-width:860px; width:100%; position:relative; z-index:1; }
-
-  /* Progress bar slide */
-  .prog-list { display: flex; flex-direction: column; gap: 0.9rem; max-width: 680px; width: 100%; position: relative; z-index:1; }
-  .prog-item .prog-label { display:flex; justify-content:space-between; font-size:0.88rem; margin-bottom:0.3rem; }
-  .prog-item .prog-label span:last-child { color: var(--accent); font-weight:700; }
-  .prog-track { height:7px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; }
-  .prog-fill   { height:100%; background: linear-gradient(90deg, var(--accent), #ff85c8); border-radius:4px; }
-
-  /* Divider line */
-  .divider { width: 60px; height: 3px; background: linear-gradient(90deg, var(--accent), transparent); border-radius: 2px; margin: 0.8rem 0 1.2rem; }
-  .center .divider { margin: 0.8rem auto 1.2rem; }
-  .center { text-align: center; }
-
-  /* Closing slide */
-  #s10 { text-align: center; }
-  #s10 h1 { font-size: 3.5rem; }
-  #s10 .big-email { font-size: 1.1rem; color: var(--accent); margin-top: 1rem; }
-  #s10 .socials { display:flex; gap:1rem; justify-content:center; margin-top:1.5rem; flex-wrap:wrap; }
+/* ─── CLOSING ─── */
+#s12{text-align:center;}
+#s12 .big{font-size:1.05rem;color:var(--accent);margin-top:.8rem;}
+#s12 .links{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:1.2rem;}
 </style>
 </head>
 <body>
-
-<div class="hint">← → Arrow keys to navigate</div>
+<div class="hint">← → to navigate</div>
 
 <div class="deck">
 
-  <!-- SLIDE 1 — Cover -->
-  <div class="slide active" id="s1">
-    <div class="avatar">👩‍💻</div>
-    <p class="tag-line">SWE 363 — Assignment 4</p>
-    <h1>Leen <span class="highlight">Refka</span></h1>
-    <p class="sub">Computer Scientist · AI Systems & Real-World Deployment</p>
-    <div class="meta">
-      <span class="pill solid">KFUPM · CS 2027</span>
-      <span class="pill">Oracle AI Certified</span>
-      <span class="pill">Founder @ Reportra</span>
-    </div>
-    <div class="slide-num">01 / 10</div>
-  </div>
+<!-- ══════════════════════════════════════════
+     SECTION 1 — INTRODUCTION  (slides 1–3)
+══════════════════════════════════════════ -->
 
-  <!-- SLIDE 2 — Project Overview -->
-  <div class="slide" id="s2">
-    <div class="slide-num">02 / 10</div>
-    <div class="layout">
-      <div>
-        <p class="tag-line">The Project</p>
-        <h2>Personal <span class="highlight">Portfolio</span></h2>
-        <div class="divider"></div>
-        <p>A fully responsive, production-ready personal portfolio web application built across four progressive assignments — from a static page to a feature-rich, deployed app.</p>
-        <br>
-        <div>
-          <span class="pill solid">HTML</span>
-          <span class="pill solid">CSS</span>
-          <span class="pill solid">JavaScript</span>
-          <span class="pill">GitHub API</span>
-          <span class="pill">Facts API</span>
-        </div>
-      </div>
-      <div class="cards" style="grid-template-columns:1fr; gap:0.75rem;">
-        <div class="card"><p class="tag-line" style="margin:0 0 0.2rem">Assignment 1</p><p>Responsive layout, dark/light theme, contact form</p></div>
-        <div class="card"><p class="tag-line" style="margin:0 0 0.2rem">Assignment 2</p><p>Greeting, project filters, live search, Fun Facts API</p></div>
-        <div class="card"><p class="tag-line" style="margin:0 0 0.2rem">Assignment 3</p><p>GitHub API, sorting, visit timer, admin mode</p></div>
-        <div class="card" style="border-color:var(--accent)"><p class="tag-line" style="margin:0 0 0.2rem">Assignment 4 ✦</p><p>Chatbot, 3D tilt, confetti, timeline, stats, typing anim.</p></div>
-      </div>
-    </div>
+<!-- S1: Cover -->
+<div class="slide active" id="s1">
+  <div class="section-label">Introduction</div>
+  <div class="slide-num">01 / 12</div>
+  <div class="avatar">👩‍💻</div>
+  <p class="eyebrow">SWE 363 · Assignment 4 · Personal Portfolio Web Application</p>
+  <h1>Leen <span class="hl">Refka</span></h1>
+  <p class="sub-title">Computer Scientist &nbsp;·&nbsp; AI Systems & Real-World Deployment</p>
+  <div class="meta-pills">
+    <span class="pill s">202359170</span>
+    <span class="pill">KFUPM · CS 2027</span>
+    <span class="pill">Oracle AI Certified</span>
+    <span class="pill">Founder @ Reportra</span>
   </div>
+  <div class="time-badge">⏱ Presentation · 5–7 minutes</div>
+</div>
 
-  <!-- SLIDE 3 — About Me -->
-  <div class="slide" id="s3">
-    <div class="slide-num">03 / 10</div>
-    <p class="tag-line">About Me</p>
-    <h2 style="align-self:flex-start; max-width:900px;">Who I <span class="highlight">Am</span></h2>
-    <div class="divider"></div>
-    <div class="tl">
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-body"><h4>B.Sc. Computer Science — KFUPM (2023–2027)</h4><p>Focusing on AI Systems, Data Engineering & Real-World Deployment</p></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-body"><h4>Outreach Team Lead — RoboNexus | KFUPM (2025–Now)</h4><p>Sponsorship & partnership acquisition for a global robotics competition</p></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-body"><h4>Mentee — PwC Middle East (Fall 2025)</h4><p>Enterprise AI integration & aligning tech with business stakeholder goals</p></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-body"><h4>Hackathons & Community</h4><p>Finals: Logistathon & Aramco Championship · Co-organized MECC Hackathon · GSR Ambassador</p></div>
-      </div>
+<!-- S2: Project Overview & Objectives -->
+<div class="slide" id="s2">
+  <div class="section-label">Introduction — Overview & Objectives</div>
+  <div class="slide-num">02 / 12</div>
+  <div class="side">
+    <div>
+      <p class="eyebrow">The Project</p>
+      <h2>What & <span class="hl">Why</span></h2>
+      <div class="divider"></div>
+      <p>A fully responsive, production-ready personal portfolio web application — built progressively across four assignments from a static page to a deployed, feature-rich application.</p>
+      <br>
+      <p style="font-size:.88rem;"><strong style="color:#fff;">Objectives</strong></p>
+      <br>
+      <div class="feat"><span class="feat-icon">🎯</span><div class="feat-text"><p>Showcase projects, skills, and experience in a professional format</p></div></div>
+      <div class="feat"><span class="feat-icon">🚀</span><div class="feat-text"><p>Demonstrate mastery of HTML, CSS, JavaScript, APIs, and deployment</p></div></div>
+      <div class="feat"><span class="feat-icon">💡</span><div class="feat-text"><p>Integrate innovation beyond basic requirements</p></div></div>
+      <div class="feat"><span class="feat-icon">📦</span><div class="feat-text"><p>Deliver a live, publicly accessible web application</p></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.7rem;position:relative;z-index:1;">
+      <div class="card"><p class="eyebrow" style="margin:0 0 .2rem;font-size:.65rem;">Assignment 1</p><p style="font-size:.85rem;">Responsive layout · dark/light theme · contact form validation</p></div>
+      <div class="card"><p class="eyebrow" style="margin:0 0 .2rem;font-size:.65rem;">Assignment 2</p><p style="font-size:.85rem;">Dynamic greeting · project filters · live search · Fun Facts API</p></div>
+      <div class="card"><p class="eyebrow" style="margin:0 0 .2rem;font-size:.65rem;">Assignment 3</p><p style="font-size:.85rem;">GitHub API · project sorting · visit timer · admin mode</p></div>
+      <div class="card accent"><p class="eyebrow" style="margin:0 0 .2rem;font-size:.65rem;">Assignment 4 ✦ Final</p><p style="font-size:.85rem;">Chatbot · 3D tilt · confetti · timeline · stat counters · typing animation · hamburger menu</p></div>
     </div>
   </div>
+</div>
 
-  <!-- SLIDE 4 — Projects -->
-  <div class="slide" id="s4">
-    <div class="slide-num">04 / 10</div>
-    <p class="tag-line">Projects</p>
-    <h2 style="align-self:flex-start; max-width:900px;">What I've <span class="highlight">Built</span></h2>
-    <div class="divider"></div>
-    <div class="cards cols-2" style="max-width:900px;">
-      <div class="card" style="border-color:var(--accent)">
-        <div class="card-icon">⚡</div>
-        <h3>Reportra</h3>
-        <p>RAG + LLM pipeline turning sensor CSVs & inspection photos into compliant PDF reports for O&M firms.</p>
-        <br>
-        <div><span class="pill">Python</span><span class="pill">LangChain</span><span class="pill">FastAPI</span><span class="pill">React</span></div>
-      </div>
-      <div class="card">
-        <div class="card-icon">🏥</div>
-        <h3>Medical Records AI</h3>
-        <p>Independent research — AI-driven clinical documentation generation applied to healthcare records.</p>
-        <br>
-        <div><span class="pill">LLM</span><span class="pill">RAG</span><span class="pill">Research</span></div>
-      </div>
-      <div class="card">
-        <div class="card-icon">🚗</div>
-        <h3>Car Evaluation ML</h3>
-        <p>KNN, SVM, MLP classifiers on Car Evaluation dataset — cross-validation & confusion matrix analysis.</p>
-        <br>
-        <div><span class="pill">scikit-learn</span><span class="pill">Python</span></div>
-      </div>
-      <div class="card">
-        <div class="card-icon">📚</div>
-        <h3>TutorLink Platform</h3>
-        <p>Team-built web-based course discovery & tutoring platform — feature workflows, UI logic, data org.</p>
-        <br>
-        <div><span class="pill">HTML</span><span class="pill">CSS</span><span class="pill">JS</span></div>
-      </div>
+<!-- S3: Personal Motivation -->
+<div class="slide" id="s3">
+  <div class="section-label">Introduction — Personal Motivation</div>
+  <div class="slide-num">03 / 12</div>
+  <p class="eyebrow">Why I Built This</p>
+  <h2 style="align-self:flex-start;max-width:900px;">Personal <span class="hl">Motivation</span></h2>
+  <div class="divider"></div>
+  <div class="g2" style="max-width:900px;">
+    <div class="card accent">
+      <div class="card-icon">⚡</div>
+      <h3>I'm building Reportra</h3>
+      <p>As the founder of an AI startup, I needed a real portfolio — not a template — that reflects my actual depth in AI engineering, backend development, and product thinking. This portfolio is my professional face.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌍</div>
+      <h3>Real-world readiness</h3>
+      <p>After my mentorship at PwC Middle East and leading outreach at RoboNexus, I understood that recruiters and partners look for polish and substance. This site needed to represent both.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧠</div>
+      <h3>Learning by building</h3>
+      <p>Each assignment pushed me to learn something new — async APIs, IntersectionObserver, CSS custom properties, accessibility. Building something real made every concept stick.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎓</div>
+      <h3>Representing my journey</h3>
+      <p>From a first-year student to a CS developer with a startup, hackathon finals, and a PwC mentorship — I wanted a single page that tells that story clearly.</p>
     </div>
   </div>
+</div>
 
-  <!-- SLIDE 5 — Skills -->
-  <div class="slide" id="s5">
-    <div class="slide-num">05 / 10</div>
-    <p class="tag-line">Tech Stack</p>
-    <h2 style="align-self:flex-start; max-width:900px;">Skills & <span class="highlight">Tools</span></h2>
-    <div class="divider"></div>
-    <div class="prog-list">
-      <div class="prog-item"><div class="prog-label"><span>Python</span><span>90%</span></div><div class="prog-track"><div class="prog-fill" style="width:90%"></div></div></div>
-      <div class="prog-item"><div class="prog-label"><span>RAG / LLM Pipelines</span><span>82%</span></div><div class="prog-track"><div class="prog-fill" style="width:82%"></div></div></div>
-      <div class="prog-item"><div class="prog-label"><span>React / Next.js</span><span>78%</span></div><div class="prog-track"><div class="prog-fill" style="width:78%"></div></div></div>
-      <div class="prog-item"><div class="prog-label"><span>HTML & CSS</span><span>80%</span></div><div class="prog-track"><div class="prog-fill" style="width:80%"></div></div></div>
-      <div class="prog-item"><div class="prog-label"><span>FastAPI / Flask</span><span>75%</span></div><div class="prog-track"><div class="prog-fill" style="width:75%"></div></div></div>
-      <div class="prog-item"><div class="prog-label"><span>scikit-learn / ML</span><span>70%</span></div><div class="prog-track"><div class="prog-fill" style="width:70%"></div></div></div>
-    </div>
-  </div>
 
-  <!-- SLIDE 6 — Innovative Features -->
-  <div class="slide" id="s6">
-    <div class="slide-num">06 / 10</div>
-    <p class="tag-line">Assignment 4 Highlights</p>
-    <h2 style="align-self:flex-start; max-width:900px;">Innovative <span class="highlight">Features</span></h2>
-    <div class="divider"></div>
-    <div class="feat-grid">
-      <div class="card"><div class="card-icon">💬</div><h3>AI Chatbot</h3><p>Rule-based assistant that answers questions about my projects, skills & availability — no external API.</p></div>
-      <div class="card"><div class="card-icon">🎲</div><h3>3D Card Tilt</h3><p>Project cards tilt in perspective following mouse movement — pure vanilla JS, no library.</p></div>
-      <div class="card"><div class="card-icon">🎉</div><h3>Confetti Burst</h3><p>Canvas-based pink confetti animation fires when the contact form is successfully submitted.</p></div>
-      <div class="card"><div class="card-icon">📊</div><h3>Stat Counters</h3><p>Numbers animate from 0 to target when scrolled into view using IntersectionObserver.</p></div>
-      <div class="card"><div class="card-icon">⌨️</div><h3>Typing Animation</h3><p>Cycling role phrases in the hero — typewriter effect with configurable speed, pause & delete.</p></div>
-      <div class="card"><div class="card-icon">📱</div><h3>Hamburger Menu</h3><p>Fully accessible mobile navigation with aria-expanded, outside-click dismiss & smooth toggle.</p></div>
-    </div>
-  </div>
+<!-- ══════════════════════════════════════════
+     SECTION 2 — TECHNICAL DEMONSTRATION  (slides 4–7)
+══════════════════════════════════════════ -->
 
-  <!-- SLIDE 7 — Technical Architecture -->
-  <div class="slide" id="s7">
-    <div class="slide-num">07 / 10</div>
-    <p class="tag-line">Technical Deep Dive</p>
-    <h2 style="align-self:flex-start; max-width:900px;">Architecture <span class="highlight">& Design</span></h2>
-    <div class="divider"></div>
-    <div class="cards cols-3" style="max-width:900px;">
-      <div class="card">
-        <h3>HTML</h3>
-        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1rem; margin-top:0.5rem; display:flex; flex-direction:column; gap:0.3rem;">
-          <li>Semantic elements</li>
-          <li>ARIA attributes</li>
-          <li>aria-live regions</li>
-          <li>Logical section IDs</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>CSS</h3>
-        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1rem; margin-top:0.5rem; display:flex; flex-direction:column; gap:0.3rem;">
-          <li>CSS custom properties</li>
-          <li>Grid + Flexbox layout</li>
-          <li>Dark/Light theming</li>
-          <li>Zero-library animations</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>JavaScript</h3>
-        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1rem; margin-top:0.5rem; display:flex; flex-direction:column; gap:0.3rem;">
-          <li>Modular init() pattern</li>
-          <li>IntersectionObserver</li>
-          <li>Async/await APIs</li>
-          <li>localStorage state</li>
-        </ul>
-      </div>
+<!-- S4: Live Demo — Key Features Part 1 -->
+<div class="slide" id="s4">
+  <div class="section-label">Technical Demonstration — Key Features</div>
+  <div class="slide-num">04 / 12</div>
+  <p class="eyebrow">Live Demo</p>
+  <h2 style="align-self:flex-start;max-width:900px;">Key <span class="hl">Features</span></h2>
+  <div class="divider"></div>
+  <div class="g2" style="max-width:900px;">
+    <div>
+      <div class="feat"><span class="feat-icon">🌙</span><div class="feat-text"><h4>Dark / Light Theme</h4><p>Toggle persisted to localStorage. System preference detected on first visit.</p></div></div>
+      <div class="feat"><span class="feat-icon">⌨️</span><div class="feat-text"><h4>Typing Animation</h4><p>Hero cycles through real roles — AI Systems Builder, Founder of Reportra, etc.</p></div></div>
+      <div class="feat"><span class="feat-icon">👋</span><div class="feat-text"><h4>Personalised Greeting</h4><p>Visitor enters their name → time-based greeting banner updates. Saved in localStorage.</p></div></div>
+      <div class="feat"><span class="feat-icon">🔍</span><div class="feat-text"><h4>Live Project Search & Filter</h4><p>Real-time search across title + tags. Composable with filter tabs and A→Z sorting.</p></div></div>
+      <div class="feat"><span class="feat-icon">📊</span><div class="feat-text"><h4>Animated Stat Counters</h4><p>Numbers count up from 0 when scrolled into view using IntersectionObserver.</p></div></div>
     </div>
-    <br>
-    <div class="cards cols-2" style="max-width:900px;">
-      <div class="card"><h3>GitHub API</h3><p>Fetches latest public repos — language badges, star counts, graceful rate-limit handling.</p></div>
-      <div class="card"><h3>Useless Facts API</h3><p>Random facts on demand — loading state, error fallback, disabled button during fetch.</p></div>
+    <div>
+      <div class="feat"><span class="feat-icon">🎲</span><div class="feat-text"><h4>3D Card Tilt</h4><p>Project cards tilt in perspective following the mouse — pure vanilla JS, no library.</p></div></div>
+      <div class="feat"><span class="feat-icon">🎉</span><div class="feat-text"><h4>Confetti on Submit</h4><p>Canvas-based pink confetti burst when the contact form is successfully submitted.</p></div></div>
+      <div class="feat"><span class="feat-icon">📱</span><div class="feat-text"><h4>Hamburger Mobile Menu</h4><p>Accessible toggle with aria-expanded, outside-click dismiss, smooth animation.</p></div></div>
+      <div class="feat"><span class="feat-icon">⬆️</span><div class="feat-text"><h4>Scroll Progress + Back to Top</h4><p>Gradient bar at the top tracks reading progress. Back-to-top appears after 400px.</p></div></div>
+      <div class="feat"><span class="feat-icon">⏱</span><div class="feat-text"><h4>Visit Timer</h4><p>Live counter in the footer — how long the current visitor has been on the page.</p></div></div>
     </div>
   </div>
+</div>
 
-  <!-- SLIDE 8 — Challenges -->
-  <div class="slide" id="s8">
-    <div class="slide-num">08 / 10</div>
-    <p class="tag-line">Technical Deep Dive</p>
-    <h2 style="align-self:flex-start; max-width:900px;">Challenges & <span class="highlight">Solutions</span></h2>
-    <div class="divider"></div>
-    <div class="challenge-list">
-      <div class="challenge-item">
-        <div><p class="label p">Problem</p><p class="prob">Duplicate CSS rules from previous assignments caused dark mode specificity conflicts</p></div>
-        <div><p class="label s">Solution</p><p class="sol">Audited & removed ~150 duplicate lines; consolidated all tokens into CSS custom properties</p></div>
-      </div>
-      <div class="challenge-item">
-        <div><p class="label p">Problem</p><p class="prob">Mobile timeline layout — the connecting dot floated away from the card on small screens</p></div>
-        <div><p class="label s">Solution</p><p class="sol">Collapsed to single-column at 768px; fixed left/padding values for the dot in the media query</p></div>
-      </div>
-      <div class="challenge-item">
-        <div><p class="label p">Unresolved</p><p class="prob">Contact form doesn't send real emails — submission is still simulated client-side only</p></div>
-        <div><p class="label s">Planned</p><p class="sol">Integrate EmailJS or Formspree for real delivery without a backend in a future update</p></div>
-      </div>
+<!-- S5: Live Demo — APIs & Chatbot -->
+<div class="slide" id="s5">
+  <div class="section-label">Technical Demonstration — APIs & Chatbot</div>
+  <div class="slide-num">05 / 12</div>
+  <p class="eyebrow">Live Demo</p>
+  <h2 style="align-self:flex-start;max-width:900px;">APIs & <span class="hl">Chatbot</span></h2>
+  <div class="divider"></div>
+  <div class="g3" style="max-width:900px;">
+    <div class="card accent">
+      <div class="card-icon">💬</div>
+      <h3>Ask Leen — Chatbot</h3>
+      <p>Rule-based chatbot answers 14 question types about projects, skills, experience, and availability. No external API — pure JS knowledge base. Floating bubble with suggestion chips.</p>
+      <br>
+      <div><span class="pill s">Innovative</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🐙</div>
+      <h3>GitHub API</h3>
+      <p>Fetches latest 6 public repos from the GitHub REST API. Shows language colour dots, star counts, and descriptions. Graceful error card if rate-limited or offline.</p>
+      <br>
+      <div><span class="pill">async/await</span><span class="pill">Error handling</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎲</div>
+      <h3>Fun Facts API</h3>
+      <p>Fetches random facts from the Useless Facts public API. Loading spinner during request, disabled button to prevent duplicate fetches, friendly error message on failure.</p>
+      <br>
+      <div><span class="pill">Loading state</span><span class="pill">Fallback</span></div>
     </div>
   </div>
+  <br>
+  <div class="g2" style="max-width:900px;">
+    <div class="card">
+      <div class="card-icon">🏛️</div>
+      <h3>Experience Timeline</h3>
+      <p>Alternating left/right timeline with real CV data — KFUPM, RoboNexus, PwC, hackathons. Collapses to single column on mobile.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📈</div>
+      <h3>Skill Proficiency Bars</h3>
+      <p>Bars animate from 0% to target when scrolled into view. 7 real skills with accurate levels from my CV — triggered by IntersectionObserver.</p>
+    </div>
+  </div>
+</div>
 
-  <!-- SLIDE 9 — AI Integration -->
-  <div class="slide" id="s9">
-    <div class="slide-num">09 / 10</div>
-    <p class="tag-line">AI Integration</p>
-    <h2 style="align-self:flex-start; max-width:900px;">How I Used <span class="highlight">AI Tools</span></h2>
-    <div class="divider"></div>
-    <div class="future-grid">
-      <div class="card"><div class="card-icon">🤖</div><h3>Code Generation</h3><p>Used AI tools to scaffold features like the typing animation and IntersectionObserver logic.</p></div>
-      <div class="card"><div class="card-icon">🐛</div><h3>Debugging</h3><p>Identified duplicate CSS, missing aria attributes, and a form ID bug from prior assignments.</p></div>
-      <div class="card"><div class="card-icon">📝</div><h3>Documentation</h3><p>Drafted README, AI usage report, and technical documentation with AI assistance.</p></div>
-      <div class="card"><div class="card-icon">🔍</div><h3>Code Review</h3><p>Reviewed generated code line-by-line, tested on real devices, modified to fit design system.</p></div>
-      <div class="card"><div class="card-icon">✂️</div><h3>What I Changed</h3><p>Adjusted hamburger click handler, fixed timeline mobile layout, tuned animation timings.</p></div>
-      <div class="card"><div class="card-icon">📚</div><h3>Learning</h3><p>Deepened understanding of IntersectionObserver, aria-expanded semantics, and CSS specificity.</p></div>
+<!-- S6: Technical Architecture -->
+<div class="slide" id="s6">
+  <div class="section-label">Technical Demonstration — Architecture Overview</div>
+  <div class="slide-num">06 / 12</div>
+  <p class="eyebrow">Under the Hood</p>
+  <h2 style="align-self:flex-start;max-width:900px;">Technical <span class="hl">Architecture</span></h2>
+  <div class="divider"></div>
+  <div class="g3" style="max-width:900px;">
+    <div class="card">
+      <h3>HTML</h3>
+      <br>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">Semantic elements — nav, section, form, footer</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">ARIA attributes — aria-live, aria-expanded, aria-label, role</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">Section IDs for smooth scroll anchoring</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">loading="lazy" on images for performance</p></div></div>
+    </div>
+    <div class="card">
+      <h3>CSS</h3>
+      <br>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">CSS custom properties for full theme system</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">Grid + Flexbox — no CSS framework needed</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">Media queries at 968px, 768px, 480px</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">Zero external CSS libraries</p></div></div>
+    </div>
+    <div class="card">
+      <h3>JavaScript</h3>
+      <br>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">Modular init*() function pattern</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">IntersectionObserver for scroll effects</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">async/await with try/catch for all API calls</p></div></div>
+      <div class="feat"><span class="feat-icon" style="font-size:.95rem;">•</span><div class="feat-text"><p style="font-size:.83rem;">localStorage for theme, name, admin state</p></div></div>
     </div>
   </div>
+  <br>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;">
+    <span class="pill s">No frameworks</span>
+    <span class="pill s">No build tools</span>
+    <span class="pill s">Zero dependencies</span>
+    <span class="pill">passive scroll listeners</span>
+    <span class="pill">Google Fonts preconnect</span>
+    <span class="pill">Deployed on GitHub Pages</span>
+  </div>
+</div>
 
-  <!-- SLIDE 10 — Closing -->
-  <div class="slide" id="s10">
-    <div class="slide-num">10 / 10</div>
-    <p class="tag-line">Thank You</p>
-    <h1>Let's <span class="highlight">Connect</span></h1>
-    <div class="divider" style="margin:0.8rem auto 1.2rem;"></div>
-    <p class="big-email">leen.n.refka@gmail.com</p>
-    <div class="socials">
-      <span class="pill">github.com/leen7777</span>
-      <span class="pill">linkedin.com/in/leenrefka</span>
+<!-- S7: AI Integration Highlights -->
+<div class="slide" id="s7">
+  <div class="section-label">Technical Demonstration — AI Integration</div>
+  <div class="slide-num">07 / 12</div>
+  <p class="eyebrow">AI Integration Highlights</p>
+  <h2 style="align-self:flex-start;max-width:900px;">How I Used <span class="hl">AI Tools</span></h2>
+  <div class="divider"></div>
+  <div class="g2" style="max-width:900px;">
+    <div>
+      <div class="feat"><span class="feat-icon">🤖</span><div class="feat-text"><h4>Code Generation</h4><p>Scaffolded the typing animation, IntersectionObserver skill bars, and confetti canvas — understood and modified each before use.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🐛</span><div class="feat-text"><h4>Debugging</h4><p>Identified ~150 lines of duplicate CSS, a missing form button ID, and absent Google Fonts link tags from previous assignments.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">♿</span><div class="feat-text"><h4>Accessibility Audit</h4><p>Flagged missing aria-expanded on hamburger, role="status" on fact box, and aria-live on form message region.</p></div></div>
     </div>
-    <br><br>
-    <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
-      <span class="pill solid">5 Projects</span>
-      <span class="pill solid">2 Hackathon Finals</span>
-      <span class="pill solid">Oracle AI Certified</span>
-      <span class="pill solid">Founder @ Reportra</span>
+    <div>
+      <div class="feat"><span class="feat-icon">📝</span><div class="feat-text"><h4>Documentation</h4><p>Drafted README, AI usage report, and technical documentation — reviewed and rewritten to match my actual implementation.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">✂️</span><div class="feat-text"><h4>What I Modified</h4><p>Fixed hamburger click handler (mousedown → click for mobile), adjusted timeline mobile layout dot positioning, tuned animation timings.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">📚</span><div class="feat-text"><h4>Learning Outcome</h4><p>Deepened understanding of IntersectionObserver, aria-expanded semantics, CSS specificity, and async error handling patterns.</p></div></div>
     </div>
   </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     SECTION 3 — TECHNICAL DEEP DIVE  (slides 8–10)
+══════════════════════════════════════════ -->
+
+<!-- S8: Resolved Challenges -->
+<div class="slide" id="s8">
+  <div class="section-label">Technical Deep Dive — Resolved</div>
+  <div class="slide-num">08 / 12</div>
+  <p class="eyebrow">Technical Deep Dive</p>
+  <h2 style="align-self:flex-start;max-width:900px;">Challenges <span class="hl">Resolved</span></h2>
+  <div class="divider"></div>
+  <div style="max-width:900px;width:100%;position:relative;z-index:1;">
+    <div class="ch-row">
+      <div><p class="ch-label p">Problem</p><p class="ch-val">~150 lines of duplicate CSS from previous assignments caused dark mode specificity conflicts — some elements ignored the theme variable.</p></div>
+      <div><p class="ch-label s">Solution</p><p class="ch-val">Full CSS audit: consolidated all colour, spacing, and animation tokens into a single set of CSS custom properties. Removed every duplicate block.</p></div>
+    </div>
+    <div class="ch-row">
+      <div><p class="ch-label p">Problem</p><p class="ch-label" style="color:transparent;">x</p><p class="ch-val">Mobile timeline layout — the connecting dot floated away from the card on screens below 768px due to absolute positioning conflicts.</p></div>
+      <div><p class="ch-label s">Solution</p><p class="ch-label" style="color:transparent;">x</p><p class="ch-val">Collapsed timeline to single column at 768px breakpoint; overrode left, padding-left, and text-align values explicitly in the media query.</p></div>
+    </div>
+    <div class="ch-row">
+      <div><p class="ch-label p">Problem</p><p class="ch-label" style="color:transparent;">x</p><p class="ch-val">Hamburger outside-click handler used mousedown which fired before the button's click event on touch devices, causing the menu to immediately close after opening.</p></div>
+      <div><p class="ch-label s">Solution</p><p class="ch-label" style="color:transparent;">x</p><p class="ch-val">Switched event listener from mousedown to click. Added a guard to skip the handler if the click target is the hamburger button itself.</p></div>
+    </div>
+    <div class="ch-row">
+      <div><p class="ch-label p">Problem</p><p class="ch-label" style="color:transparent;">x</p><p class="ch-val">Contact form submit button had no id attribute — the JS referenced #submitBtn but the element was unreachable, silently failing.</p></div>
+      <div><p class="ch-label s">Solution</p><p class="ch-label" style="color:transparent;">x</p><p class="ch-val">Added id="submitBtn" and id="submitText" to the HTML. Verified with DevTools that the loading state and success message now trigger correctly.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- S9: Unresolved + Future Plans -->
+<div class="slide" id="s9">
+  <div class="section-label">Technical Deep Dive — Unresolved & Future</div>
+  <div class="slide-num">09 / 12</div>
+  <p class="eyebrow">Technical Deep Dive</p>
+  <h2 style="align-self:flex-start;max-width:900px;">Unresolved & <span class="hl">Future Plans</span></h2>
+  <div class="divider"></div>
+  <div class="side" style="max-width:900px;">
+    <div>
+      <p style="font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:.7rem;">Not Implemented</p>
+      <div class="feat"><span class="feat-icon">📧</span><div class="feat-text"><h4>Real email delivery</h4><p>Contact form submission is still simulated client-side — no real email is sent. Requires a backend or third-party service.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🔐</span><div class="feat-text"><h4>Real admin authentication</h4><p>Admin mode is a simple localStorage toggle — not a real login system. Anyone can activate it.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🌐</span><div class="feat-text"><h4>Arabic language support</h4><p>An Arabic/English toggle was planned but not implemented within the assignment scope.</p></div></div>
+    </div>
+    <div>
+      <p style="font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:.7rem;">Planned for Future</p>
+      <div class="feat"><span class="feat-icon">📨</span><div class="feat-text"><h4>EmailJS / Formspree integration</h4><p>Real contact form delivery without a backend — free tier supports portfolio use.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🤖</span><div class="feat-text"><h4>LLM-powered chatbot</h4><p>Replace the rule-based chatbot with a Claude API integration for natural language answers about my work.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">📝</span><div class="feat-text"><h4>Blog / project case studies</h4><p>Deep-dive write-ups for Reportra and Medical Records AI — connected to a headless CMS.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🌍</span><div class="feat-text"><h4>Arabic/English toggle</h4><p>Language switcher with full RTL layout support for Arabic text.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S10: Innovative Solutions & Lessons Learned -->
+<div class="slide" id="s10">
+  <div class="section-label">Technical Deep Dive — Innovation & Lessons</div>
+  <div class="slide-num">10 / 12</div>
+  <p class="eyebrow">Technical Deep Dive</p>
+  <h2 style="align-self:flex-start;max-width:900px;">Innovation & <span class="hl">Lessons Learned</span></h2>
+  <div class="divider"></div>
+  <div class="side" style="max-width:900px;">
+    <div>
+      <p style="font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem;">Innovative Solutions</p>
+      <div class="feat"><span class="feat-icon">💬</span><div class="feat-text"><h4>Rule-based chatbot</h4><p>14-topic knowledge base built from my CV — no API costs, works offline, answers questions recruiters actually ask.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🎲</span><div class="feat-text"><h4>3D card tilt</h4><p>Mouse-tracked perspective transform using only mousemove — creates depth without any 3D library.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🎉</span><div class="feat-text"><h4>Canvas confetti</h4><p>Hand-written particle system on an HTML canvas — 120 pieces, per-particle drift, rotation, and auto-cleanup after 3 seconds.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">📊</span><div class="feat-text"><h4>IntersectionObserver everywhere</h4><p>Used for scroll reveal, skill bars, and stat counters — no scroll event polling, no performance cost.</p></div></div>
+    </div>
+    <div>
+      <p style="font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:.8rem;">Lessons Learned</p>
+      <div class="feat"><span class="feat-icon">🧠</span><div class="feat-text"><h4>IntersectionObserver is powerful</h4><p>Replaces scroll listeners for most animation triggers. Cleaner, more performant, and the threshold option gives precise control.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🎨</span><div class="feat-text"><h4>CSS variables are a design system</h4><p>Defining all tokens in :root meant the entire theme switch was one attribute change — no JavaScript needed for colours.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">♿</span><div class="feat-text"><h4>Accessibility is architecture</h4><p>aria-expanded, aria-live, and role aren't optional extras — they change how assistive tech interprets the page and should be planned from the start.</p></div></div>
+      <br>
+      <div class="feat"><span class="feat-icon">🔍</span><div class="feat-text"><h4>Review AI output critically</h4><p>Every generated snippet needed testing and adaptation. AI accelerates — it doesn't replace — understanding the code.</p></div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     SECTION 4 — CONCLUSION  (slides 11–12)
+══════════════════════════════════════════ -->
+
+<!-- S11: Outcomes & Achievements -->
+<div class="slide" id="s11">
+  <div class="section-label">Conclusion — Outcomes & Achievements</div>
+  <div class="slide-num">11 / 12</div>
+  <p class="eyebrow">Conclusion</p>
+  <h2 style="align-self:flex-start;max-width:900px;">Outcomes & <span class="hl">Achievements</span></h2>
+  <div class="divider"></div>
+  <div class="g4" style="max-width:960px;">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.2rem;font-family:var(--fh);color:var(--accent);font-weight:600;">5</div>
+      <p style="font-size:.82rem;margin-top:.3rem;">Real Projects<br>Showcased</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.2rem;font-family:var(--fh);color:var(--accent);font-weight:600;">7+</div>
+      <p style="font-size:.82rem;margin-top:.3rem;">Innovative<br>Features Added</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.2rem;font-family:var(--fh);color:var(--accent);font-weight:600;">2</div>
+      <p style="font-size:.82rem;margin-top:.3rem;">External APIs<br>Integrated</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:2.2rem;font-family:var(--fh);color:var(--accent);font-weight:600;">0</div>
+      <p style="font-size:.82rem;margin-top:.3rem;">External Libraries<br>Used</p>
+    </div>
+  </div>
+  <br>
+  <div class="g3" style="max-width:900px;">
+    <div class="card">
+      <div class="card-icon">✅</div>
+      <h3>All Requirements Met</h3>
+      <p style="font-size:.83rem;">Responsive design, dark/light theme, APIs, form validation, deployment, documentation, AI usage report — all complete.</p>
+    </div>
+    <div class="card accent">
+      <div class="card-icon">⚡</div>
+      <h3>Production Quality</h3>
+      <p style="font-size:.83rem;">Deployed on GitHub Pages. Tested on Chrome, Firefox, mobile. passive scroll listeners. Lazy loading. Zero console errors.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤖</div>
+      <h3>Responsible AI Use</h3>
+      <p style="font-size:.83rem;">Every AI-generated snippet was reviewed, tested, and modified. Full transparency in docs/ai-usage-report.md.</p>
+    </div>
+  </div>
+</div>
+
+<!-- S12: Closing -->
+<div class="slide" id="s12">
+  <div class="section-label">Conclusion</div>
+  <div class="slide-num">12 / 12</div>
+  <p class="eyebrow">Thank You</p>
+  <h1>Let's <span class="hl">Connect</span></h1>
+  <div class="divider" style="margin:.8rem auto 1.2rem;"></div>
+  <p class="big">leen.n.refka@gmail.com</p>
+  <div class="links">
+    <span class="pill">github.com/leen7777</span>
+    <span class="pill">linkedin.com/in/leenrefka</span>
+  </div>
+  <br>
+  <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;">
+    <span class="pill s">Leen Refka · 202359170</span>
+    <span class="pill">SWE 363 · Assignment 4</span>
+    <span class="pill">KFUPM · CS 2027</span>
+  </div>
+  <br>
+  <p style="font-size:.82rem;opacity:.5;">Open to internship opportunities in AI Engineering, Data Engineering & Full-Stack Development</p>
+</div>
 
 </div><!-- /deck -->
 
-<!-- Navigation -->
 <nav class="nav">
   <button id="prev" disabled>←</button>
-  <span id="slideCounter">1 / 10</span>
+  <span id="ctr">1 / 12</span>
   <button id="next">→</button>
 </nav>
 
 <script>
-  const slides = document.querySelectorAll('.slide');
-  let cur = 0;
+const slides = document.querySelectorAll('.slide');
+const total  = slides.length;
+let cur = 0;
 
-  function goTo(n) {
-    slides[cur].classList.remove('active');
-    slides[cur].classList.add('prev');
-    setTimeout(() => slides[cur].classList.remove('prev'), 500);
-    cur = n;
-    slides[cur].classList.add('active');
-    document.getElementById('slideCounter').textContent = `${cur + 1} / ${slides.length}`;
-    document.getElementById('prev').disabled = cur === 0;
-    document.getElementById('next').disabled = cur === slides.length - 1;
-  }
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  setTimeout(() => slides[cur].classList.remove('out'), 450);
+  cur = n;
+  slides[cur].classList.add('active');
+  document.getElementById('ctr').textContent = `${cur + 1} / ${total}`;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === total - 1;
+}
 
-  document.getElementById('prev').addEventListener('click', () => { if (cur > 0) goTo(cur - 1); });
-  document.getElementById('next').addEventListener('click', () => { if (cur < slides.length - 1) goTo(cur + 1); });
+document.getElementById('prev').addEventListener('click', () => { if (cur > 0) goTo(cur - 1); });
+document.getElementById('next').addEventListener('click', () => { if (cur < total - 1) goTo(cur + 1); });
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { if (cur < slides.length - 1) goTo(cur + 1); }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { if (cur > 0) goTo(cur - 1); }
-  });
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { if (cur < total - 1) goTo(cur + 1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { if (cur > 0) goTo(cur - 1); }
+});
 </script>
 </body>
 </html>
