@@ -581,6 +581,38 @@
     <!-- Back to Top Button -->
     <button id="backToTop" class="back-to-top" aria-label="Scroll back to top" title="Back to top">↑</button>
 
+    <!-- Chatbot -->
+    <div id="chatbot" class="chatbot" aria-live="polite">
+        <div class="chat-window" id="chatWindow" hidden>
+            <div class="chat-header">
+                <div class="chat-avatar" aria-hidden="true">💬</div>
+                <div>
+                    <p class="chat-name">Ask Leen</p>
+                    <p class="chat-status"><span class="chat-dot"></span> Online</p>
+                </div>
+                <button class="chat-close" id="chatClose" aria-label="Close chat">✕</button>
+            </div>
+            <div class="chat-messages" id="chatMessages" role="log" aria-label="Chat messages"></div>
+            <div class="chat-suggestions" id="chatSuggestions">
+                <button class="suggestion-chip" data-q="What is Reportra?">What is Reportra?</button>
+                <button class="suggestion-chip" data-q="What's your tech stack?">Tech stack</button>
+                <button class="suggestion-chip" data-q="Are you open to internships?">Open to internships?</button>
+                <button class="suggestion-chip" data-q="Tell me about your experience">Experience</button>
+                <button class="suggestion-chip" data-q="What hackathons have you done?">Hackathons</button>
+                <button class="suggestion-chip" data-q="How can I contact you?">Contact</button>
+            </div>
+            <form class="chat-input-row" id="chatForm" autocomplete="off">
+                <input type="text" id="chatInput" placeholder="Ask me anything…" aria-label="Type your question" maxlength="120" />
+                <button type="submit" aria-label="Send message">➤</button>
+            </form>
+        </div>
+        <button class="chat-bubble" id="chatBubble" aria-label="Open chat with Leen's assistant" title="Ask me anything!">
+            <span class="chat-bubble-icon">💬</span>
+            <span class="chat-bubble-close" hidden>✕</span>
+            <span class="chat-bubble-ping" aria-hidden="true"></span>
+        </button>
+    </div>
+
     <script src="js/script.js"></script>
 </body>
 </html>

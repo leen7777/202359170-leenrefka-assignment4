@@ -499,6 +499,140 @@ function initBackToTop() {
 }
 
 // ========================
+// CHATBOT
+// ========================
+function initChatbot() {
+    const bubble   = document.getElementById('chatBubble');
+    const window_  = document.getElementById('chatWindow');
+    const closeBtn = document.getElementById('chatClose');
+    const messages = document.getElementById('chatMessages');
+    const form     = document.getElementById('chatForm');
+    const input    = document.getElementById('chatInput');
+    const chips    = document.querySelectorAll('.suggestion-chip');
+    if (!bubble) return;
+
+    const bubbleIcon  = bubble.querySelector('.chat-bubble-icon');
+    const bubbleClose = bubble.querySelector('.chat-bubble-close');
+
+    const KB = [
+        {
+            keys: ['reportra', 'startup', 'founder'],
+            answer: "Reportra is my startup — I'm building a RAG + LLM pipeline that turns sensor CSVs and inspection photos into compliant PDF reports for O&M firms. Stack: Python, LangChain, FastAPI, React. It's actively in development! 🚀"
+        },
+        {
+            keys: ['medical', 'healthcare', 'clinical', 'hospital'],
+            answer: "I'm doing independent research on AI-driven generation of clinical documentation — applying the same pipeline concept from Reportra to healthcare records. It's about making unstructured medical data structured and compliant."
+        },
+        {
+            keys: ['stack', 'tech', 'technology', 'tools', 'use'],
+            answer: "My current stack: Python, FastAPI, LangChain, React, Next.js for building. For AI/ML: RAG pipelines, Claude & GPT-4o, Pinecone, scikit-learn. For tools: Git, Jupyter, VS Code, Figma, Postman. 🛠️"
+        },
+        {
+            keys: ['internship', 'hire', 'available', 'opportunity', 'job', 'work', 'open'],
+            answer: "Yes! I'm actively looking for internship opportunities in AI engineering, data engineering, or full-stack development. Feel free to reach out via the contact form or at leen.n.refka@gmail.com 💌"
+        },
+        {
+            keys: ['experience', 'pwc', 'robo', 'nexus', 'lead', 'work'],
+            answer: "I'm currently Outreach Team Lead at RoboNexus (KFUPM) — managing sponsorships for a global robotics competition. Last semester I was a mentee at PwC Middle East, where I learned about enterprise AI integration and aligning tech with business goals."
+        },
+        {
+            keys: ['hackathon', 'competition', 'logistathon', 'aramco', 'mecc'],
+            answer: "I reached the finals in the Logistathon and the Aramco Consulting Championship, and I co-organized the MECC Hackathon at KFUPM. Hackathons are one of my favourite ways to learn fast and build under pressure! ⚡"
+        },
+        {
+            keys: ['education', 'study', 'kfupm', 'university', 'degree', 'cs'],
+            answer: "I'm studying Computer Science at King Fahd University of Petroleum & Minerals (KFUPM), graduating in 2027. I'm focusing on AI systems, data engineering, and real-world software deployment."
+        },
+        {
+            keys: ['cert', 'certification', 'oracle'],
+            answer: "I hold the Oracle AI Foundations certification, which covers AI concepts, ML fundamentals, and Oracle's AI platform. 🏅"
+        },
+        {
+            keys: ['community', 'mentor', 'gsr', 'ambassador', 'volunteer'],
+            answer: "Outside of projects, I'm an Academic Mentor (English & Math) at KFUPM, Local Ambassadors Coordinator for the Global Student Research Conference (GSR), and I co-organized the MECC Hackathon."
+        },
+        {
+            keys: ['contact', 'email', 'reach', 'message', 'linkedin'],
+            answer: "Best ways to reach me:\n📧 leen.n.refka@gmail.com\n💼 linkedin.com/in/leenrefka\nOr use the contact form on this page — I reply within 24 hours!"
+        },
+        {
+            keys: ['project', 'built', 'portfolio', 'work'],
+            answer: "I have 5 key projects: Reportra (AI reporting startup), Medical Records Automation (research), Car Evaluation ML model, TutorLink (web platform), and this portfolio itself. Check the Projects section for details!"
+        },
+        {
+            keys: ['skill', 'good at', 'best at', 'strong'],
+            answer: "My strongest areas are Python, RAG/LLM pipelines, and full-stack development with FastAPI + React. I'm also comfortable with scikit-learn for classical ML and building production-ready APIs."
+        },
+        {
+            keys: ['hello', 'hi', 'hey', 'sup', 'hola', 'greet'],
+            answer: "Hi there! 👋 I'm Leen's virtual assistant. Ask me anything about her projects, skills, experience, or how to get in touch. You can also click the suggestion chips below!"
+        },
+        {
+            keys: ['who', 'about', 'yourself', 'leen', 'tell me'],
+            answer: "Leen Refka is a Computer Science student at KFUPM with a focus on AI Systems & Real-World Deployment. She's the founder of Reportra, an Oracle AI Foundations certified developer, and passionate about turning complex data into production-ready AI tools."
+        },
+    ];
+
+    const fallback = "I'm not sure about that one! Try asking about Reportra, my tech stack, experience, or how to contact Leen. 😊";
+
+    function getReply(q) {
+        const text = q.toLowerCase();
+        for (const entry of KB) {
+            if (entry.keys.some(k => text.includes(k))) return entry.answer;
+        }
+        return fallback;
+    }
+
+    function addMsg(text, role) {
+        const el = document.createElement('div');
+        el.className = `chat-msg ${role}`;
+        el.textContent = text;
+        messages.appendChild(el);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function botReply(q) {
+        addMsg(q, 'user');
+        input.value = '';
+        setTimeout(() => {
+            addMsg(getReply(q), 'bot');
+        }, 380);
+    }
+
+    function openChat() {
+        window_.hidden = false;
+        bubbleIcon.hidden = true;
+        bubbleClose.hidden = false;
+        if (!messages.children.length) {
+            setTimeout(() => addMsg("Hi! 👋 I'm Leen's assistant. Ask me anything about her projects, skills, or experience!", 'bot'), 200);
+        }
+        input.focus();
+    }
+
+    function closeChat() {
+        window_.hidden = true;
+        bubbleIcon.hidden = false;
+        bubbleClose.hidden = true;
+    }
+
+    bubble.addEventListener('click', () => window_.hidden ? openChat() : closeChat());
+    closeBtn.addEventListener('click', closeChat);
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const q = input.value.trim();
+        if (q) botReply(q);
+    });
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            if (window_.hidden) openChat();
+            setTimeout(() => botReply(chip.dataset.q), 150);
+        });
+    });
+}
+
+// ========================
 // ANIMATED STAT COUNTERS
 // ========================
 function initStatCounters() {
@@ -616,6 +750,7 @@ loadTheme();
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
 
+    initChatbot();
     initLoginState();
     initPersonalisedGreeting();
     initTypingAnimation();
