@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leen Refka — Portfolio Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent:   #ff1493;
+    --accent2:  #c71585;
+    --dark:     #0a0a0a;
+    --card:     #1a1a1a;
+    --text:     #ffffff;
+    --muted:    #ffc0cb;
+    --border:   rgba(255,20,147,0.3);
+    --font-h:   'Cormorant Garamond', serif;
+    --font-b:   'DM Sans', sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: var(--font-b);
+    background: var(--dark);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* ── SLIDES ── */
+  .deck { width: 100vw; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateX(60px);
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+  .slide.prev { transform: translateX(-60px); }
+
+  /* Subtle grid background */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    opacity: 0.35;
+  }
+
+  /* Pink blob accent */
+  .slide::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,20,147,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── NAVIGATION ── */
+  .nav {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(26,26,26,0.9);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 0.6rem 1.2rem;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-family: var(--font-b);
+  }
+  .nav button:hover { background: var(--border); color: white; }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+  #slideCounter { font-size: 0.85rem; color: var(--muted); min-width: 60px; text-align: center; }
+
+  /* Keyboard hint */
+  .hint {
+    position: fixed;
+    top: 1.2rem;
+    right: 1.5rem;
+    font-size: 0.75rem;
+    color: rgba(255,192,203,0.5);
+    font-family: var(--font-b);
+  }
+
+  /* Slide number pill */
+  .slide-num {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    font-family: var(--font-b);
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .tag-line {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  h1 { font-family: var(--font-h); font-size: 4rem; line-height: 1.1; margin-bottom: 1rem; }
+  h2 { font-family: var(--font-h); font-size: 2.8rem; margin-bottom: 1.2rem; }
+  h3 { font-family: var(--font-h); font-size: 1.6rem; margin-bottom: 0.5rem; color: var(--accent); }
+  p  { color: var(--muted); line-height: 1.7; font-size: 1rem; }
+  .highlight { color: var(--accent); }
+
+  /* ── CARDS GRID ── */
+  .cards {
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+    max-width: 900px;
+    position: relative;
+    z-index: 1;
+  }
+  .cards.cols-2 { grid-template-columns: 1fr 1fr; }
+  .cards.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.3rem 1.5rem;
+  }
+  .card-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .card p { font-size: 0.88rem; margin-top: 0.3rem; }
+
+  /* ── PILL / BADGE ── */
+  .pill {
+    display: inline-block;
+    background: rgba(255,20,147,0.15);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0.2rem;
+  }
+  .pill.solid { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* ── TIMELINE ── */
+  .tl { display: flex; flex-direction: column; gap: 0.8rem; max-width: 700px; width: 100%; position: relative; z-index:1; }
+  .tl-item { display: flex; gap: 1rem; align-items: flex-start; }
+  .tl-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; margin-top: 0.45rem; flex-shrink: 0; }
+  .tl-body h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.1rem; }
+  .tl-body p  { font-size: 0.85rem; }
+
+  /* ── FEATURE LIST ── */
+  .feat-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; position: relative; z-index:1; }
+  .feat-list li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.95rem; }
+  .feat-list li span.icon { font-size: 1.2rem; flex-shrink: 0; }
+
+  /* ── SLIDE-SPECIFIC ── */
+  /* Slide 1 — Cover */
+  #s1 { text-align: center; }
+  #s1 .avatar {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0 40px rgba(255,20,147,0.4);
+  }
+  #s1 .sub { font-size: 1.15rem; color: var(--muted); margin-bottom: 1.5rem; }
+  #s1 .meta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  /* Slide 2 — About */
+  #s2 { align-items: flex-start; }
+  #s2 .layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 3rem; width: 100%; max-width: 900px; position: relative; z-index:1; }
+
+  /* Slide 6 — Innovative features */
+  .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; width:100%; max-width:860px; position:relative; z-index:1; }
+
+  /* Slide 8 — Challenges */
+  .challenge-list { display: flex; flex-direction: column; gap: 1rem; max-width: 780px; width:100%; position:relative; z-index:1; }
+  .challenge-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .challenge-item .prob { color: var(--muted); font-size: 0.88rem; }
+  .challenge-item .sol  { color: #a8f0a8; font-size: 0.88rem; }
+  .challenge-item .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.2rem; }
+  .challenge-item .label.p { color: #ff8080; }
+  .challenge-item .label.s { color: #22c55e; }
+
+  /* Slide 9 — Future */
+  .future-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.9rem; max-width:860px; width:100%; position:relative; z-index:1; }
+
+  /* Progress bar slide */
+  .prog-list { display: flex; flex-direction: column; gap: 0.9rem; max-width: 680px; width: 100%; position: relative; z-index:1; }
+  .prog-item .prog-label { display:flex; justify-content:space-between; font-size:0.88rem; margin-bottom:0.3rem; }
+  .prog-item .prog-label span:last-child { color: var(--accent); font-weight:700; }
+  .prog-track { height:7px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; }
+  .prog-fill   { height:100%; background: linear-gradient(90deg, var(--accent), #ff85c8); border-radius:4px; }
+
+  /* Divider line */
+  .divider { width: 60px; height: 3px; background: linear-gradient(90deg, var(--accent), transparent); border-radius: 2px; margin: 0.8rem 0 1.2rem; }
+  .center .divider { margin: 0.8rem auto 1.2rem; }
+  .center { text-align: center; }
+
+  /* Closing slide */
+  #s10 { text-align: center; }
+  #s10 h1 { font-size: 3.5rem; }
+  #s10 .big-email { font-size: 1.1rem; color: var(--accent); margin-top: 1rem; }
+  #s10 .socials { display:flex; gap:1rem; justify-content:center; margin-top:1.5rem; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+
+<div class="hint">← → Arrow keys to navigate</div>
+
+<div class="deck">
+
+  <!-- SLIDE 1 — Cover -->
+  <div class="slide active" id="s1">
+    <div class="avatar">👩‍💻</div>
+    <p class="tag-line">SWE 363 — Assignment 4</p>
+    <h1>Leen <span class="highlight">Refka</span></h1>
+    <p class="sub">Computer Scientist · AI Systems & Real-World Deployment</p>
+    <div class="meta">
+      <span class="pill solid">KFUPM · CS 2027</span>
+      <span class="pill">Oracle AI Certified</span>
+      <span class="pill">Founder @ Reportra</span>
+    </div>
+    <div class="slide-num">01 / 10</div>
+  </div>
+
+  <!-- SLIDE 2 — Project Overview -->
+  <div class="slide" id="s2">
+    <div class="slide-num">02 / 10</div>
+    <div class="layout">
+      <div>
+        <p class="tag-line">The Project</p>
+        <h2>Personal <span class="highlight">Portfolio</span></h2>
+        <div class="divider"></div>
+        <p>A fully responsive, production-ready personal portfolio web application built across four progressive assignments — from a static page to a feature-rich, deployed app.</p>
+        <br>
+        <div>
+          <span class="pill solid">HTML</span>
+          <span class="pill solid">CSS</span>
+          <span class="pill solid">JavaScript</span>
+          <span class="pill">GitHub API</span>
+          <span class="pill">Facts API</span>
+        </div>
+      </div>
+      <div class="cards" style="grid-template-columns:1fr; gap:0.75rem;">
+        <div class="card"><p class="tag-line" style="margin:0 0 0.2rem">Assignment 1</p><p>Responsive layout, dark/light theme, contact form</p></div>
+        <div class="card"><p class="tag-line" style="margin:0 0 0.2rem">Assignment 2</p><p>Greeting, project filters, live search, Fun Facts API</p></div>
+        <div class="card"><p class="tag-line" style="margin:0 0 0.2rem">Assignment 3</p><p>GitHub API, sorting, visit timer, admin mode</p></div>
+        <div class="card" style="border-color:var(--accent)"><p class="tag-line" style="margin:0 0 0.2rem">Assignment 4 ✦</p><p>Chatbot, 3D tilt, confetti, timeline, stats, typing anim.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 — About Me -->
+  <div class="slide" id="s3">
+    <div class="slide-num">03 / 10</div>
+    <p class="tag-line">About Me</p>
+    <h2 style="align-self:flex-start; max-width:900px;">Who I <span class="highlight">Am</span></h2>
+    <div class="divider"></div>
+    <div class="tl">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body"><h4>B.Sc. Computer Science — KFUPM (2023–2027)</h4><p>Focusing on AI Systems, Data Engineering & Real-World Deployment</p></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body"><h4>Outreach Team Lead — RoboNexus | KFUPM (2025–Now)</h4><p>Sponsorship & partnership acquisition for a global robotics competition</p></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body"><h4>Mentee — PwC Middle East (Fall 2025)</h4><p>Enterprise AI integration & aligning tech with business stakeholder goals</p></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body"><h4>Hackathons & Community</h4><p>Finals: Logistathon & Aramco Championship · Co-organized MECC Hackathon · GSR Ambassador</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 — Projects -->
+  <div class="slide" id="s4">
+    <div class="slide-num">04 / 10</div>
+    <p class="tag-line">Projects</p>
+    <h2 style="align-self:flex-start; max-width:900px;">What I've <span class="highlight">Built</span></h2>
+    <div class="divider"></div>
+    <div class="cards cols-2" style="max-width:900px;">
+      <div class="card" style="border-color:var(--accent)">
+        <div class="card-icon">⚡</div>
+        <h3>Reportra</h3>
+        <p>RAG + LLM pipeline turning sensor CSVs & inspection photos into compliant PDF reports for O&M firms.</p>
+        <br>
+        <div><span class="pill">Python</span><span class="pill">LangChain</span><span class="pill">FastAPI</span><span class="pill">React</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏥</div>
+        <h3>Medical Records AI</h3>
+        <p>Independent research — AI-driven clinical documentation generation applied to healthcare records.</p>
+        <br>
+        <div><span class="pill">LLM</span><span class="pill">RAG</span><span class="pill">Research</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🚗</div>
+        <h3>Car Evaluation ML</h3>
+        <p>KNN, SVM, MLP classifiers on Car Evaluation dataset — cross-validation & confusion matrix analysis.</p>
+        <br>
+        <div><span class="pill">scikit-learn</span><span class="pill">Python</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📚</div>
+        <h3>TutorLink Platform</h3>
+        <p>Team-built web-based course discovery & tutoring platform — feature workflows, UI logic, data org.</p>
+        <br>
+        <div><span class="pill">HTML</span><span class="pill">CSS</span><span class="pill">JS</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 — Skills -->
+  <div class="slide" id="s5">
+    <div class="slide-num">05 / 10</div>
+    <p class="tag-line">Tech Stack</p>
+    <h2 style="align-self:flex-start; max-width:900px;">Skills & <span class="highlight">Tools</span></h2>
+    <div class="divider"></div>
+    <div class="prog-list">
+      <div class="prog-item"><div class="prog-label"><span>Python</span><span>90%</span></div><div class="prog-track"><div class="prog-fill" style="width:90%"></div></div></div>
+      <div class="prog-item"><div class="prog-label"><span>RAG / LLM Pipelines</span><span>82%</span></div><div class="prog-track"><div class="prog-fill" style="width:82%"></div></div></div>
+      <div class="prog-item"><div class="prog-label"><span>React / Next.js</span><span>78%</span></div><div class="prog-track"><div class="prog-fill" style="width:78%"></div></div></div>
+      <div class="prog-item"><div class="prog-label"><span>HTML & CSS</span><span>80%</span></div><div class="prog-track"><div class="prog-fill" style="width:80%"></div></div></div>
+      <div class="prog-item"><div class="prog-label"><span>FastAPI / Flask</span><span>75%</span></div><div class="prog-track"><div class="prog-fill" style="width:75%"></div></div></div>
+      <div class="prog-item"><div class="prog-label"><span>scikit-learn / ML</span><span>70%</span></div><div class="prog-track"><div class="prog-fill" style="width:70%"></div></div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 — Innovative Features -->
+  <div class="slide" id="s6">
+    <div class="slide-num">06 / 10</div>
+    <p class="tag-line">Assignment 4 Highlights</p>
+    <h2 style="align-self:flex-start; max-width:900px;">Innovative <span class="highlight">Features</span></h2>
+    <div class="divider"></div>
+    <div class="feat-grid">
+      <div class="card"><div class="card-icon">💬</div><h3>AI Chatbot</h3><p>Rule-based assistant that answers questions about my projects, skills & availability — no external API.</p></div>
+      <div class="card"><div class="card-icon">🎲</div><h3>3D Card Tilt</h3><p>Project cards tilt in perspective following mouse movement — pure vanilla JS, no library.</p></div>
+      <div class="card"><div class="card-icon">🎉</div><h3>Confetti Burst</h3><p>Canvas-based pink confetti animation fires when the contact form is successfully submitted.</p></div>
+      <div class="card"><div class="card-icon">📊</div><h3>Stat Counters</h3><p>Numbers animate from 0 to target when scrolled into view using IntersectionObserver.</p></div>
+      <div class="card"><div class="card-icon">⌨️</div><h3>Typing Animation</h3><p>Cycling role phrases in the hero — typewriter effect with configurable speed, pause & delete.</p></div>
+      <div class="card"><div class="card-icon">📱</div><h3>Hamburger Menu</h3><p>Fully accessible mobile navigation with aria-expanded, outside-click dismiss & smooth toggle.</p></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 — Technical Architecture -->
+  <div class="slide" id="s7">
+    <div class="slide-num">07 / 10</div>
+    <p class="tag-line">Technical Deep Dive</p>
+    <h2 style="align-self:flex-start; max-width:900px;">Architecture <span class="highlight">& Design</span></h2>
+    <div class="divider"></div>
+    <div class="cards cols-3" style="max-width:900px;">
+      <div class="card">
+        <h3>HTML</h3>
+        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1rem; margin-top:0.5rem; display:flex; flex-direction:column; gap:0.3rem;">
+          <li>Semantic elements</li>
+          <li>ARIA attributes</li>
+          <li>aria-live regions</li>
+          <li>Logical section IDs</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>CSS</h3>
+        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1rem; margin-top:0.5rem; display:flex; flex-direction:column; gap:0.3rem;">
+          <li>CSS custom properties</li>
+          <li>Grid + Flexbox layout</li>
+          <li>Dark/Light theming</li>
+          <li>Zero-library animations</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>JavaScript</h3>
+        <ul style="color:var(--muted); font-size:0.85rem; padding-left:1rem; margin-top:0.5rem; display:flex; flex-direction:column; gap:0.3rem;">
+          <li>Modular init() pattern</li>
+          <li>IntersectionObserver</li>
+          <li>Async/await APIs</li>
+          <li>localStorage state</li>
+        </ul>
+      </div>
+    </div>
+    <br>
+    <div class="cards cols-2" style="max-width:900px;">
+      <div class="card"><h3>GitHub API</h3><p>Fetches latest public repos — language badges, star counts, graceful rate-limit handling.</p></div>
+      <div class="card"><h3>Useless Facts API</h3><p>Random facts on demand — loading state, error fallback, disabled button during fetch.</p></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 — Challenges -->
+  <div class="slide" id="s8">
+    <div class="slide-num">08 / 10</div>
+    <p class="tag-line">Technical Deep Dive</p>
+    <h2 style="align-self:flex-start; max-width:900px;">Challenges & <span class="highlight">Solutions</span></h2>
+    <div class="divider"></div>
+    <div class="challenge-list">
+      <div class="challenge-item">
+        <div><p class="label p">Problem</p><p class="prob">Duplicate CSS rules from previous assignments caused dark mode specificity conflicts</p></div>
+        <div><p class="label s">Solution</p><p class="sol">Audited & removed ~150 duplicate lines; consolidated all tokens into CSS custom properties</p></div>
+      </div>
+      <div class="challenge-item">
+        <div><p class="label p">Problem</p><p class="prob">Mobile timeline layout — the connecting dot floated away from the card on small screens</p></div>
+        <div><p class="label s">Solution</p><p class="sol">Collapsed to single-column at 768px; fixed left/padding values for the dot in the media query</p></div>
+      </div>
+      <div class="challenge-item">
+        <div><p class="label p">Unresolved</p><p class="prob">Contact form doesn't send real emails — submission is still simulated client-side only</p></div>
+        <div><p class="label s">Planned</p><p class="sol">Integrate EmailJS or Formspree for real delivery without a backend in a future update</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9 — AI Integration -->
+  <div class="slide" id="s9">
+    <div class="slide-num">09 / 10</div>
+    <p class="tag-line">AI Integration</p>
+    <h2 style="align-self:flex-start; max-width:900px;">How I Used <span class="highlight">AI Tools</span></h2>
+    <div class="divider"></div>
+    <div class="future-grid">
+      <div class="card"><div class="card-icon">🤖</div><h3>Code Generation</h3><p>Used AI tools to scaffold features like the typing animation and IntersectionObserver logic.</p></div>
+      <div class="card"><div class="card-icon">🐛</div><h3>Debugging</h3><p>Identified duplicate CSS, missing aria attributes, and a form ID bug from prior assignments.</p></div>
+      <div class="card"><div class="card-icon">📝</div><h3>Documentation</h3><p>Drafted README, AI usage report, and technical documentation with AI assistance.</p></div>
+      <div class="card"><div class="card-icon">🔍</div><h3>Code Review</h3><p>Reviewed generated code line-by-line, tested on real devices, modified to fit design system.</p></div>
+      <div class="card"><div class="card-icon">✂️</div><h3>What I Changed</h3><p>Adjusted hamburger click handler, fixed timeline mobile layout, tuned animation timings.</p></div>
+      <div class="card"><div class="card-icon">📚</div><h3>Learning</h3><p>Deepened understanding of IntersectionObserver, aria-expanded semantics, and CSS specificity.</p></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10 — Closing -->
+  <div class="slide" id="s10">
+    <div class="slide-num">10 / 10</div>
+    <p class="tag-line">Thank You</p>
+    <h1>Let's <span class="highlight">Connect</span></h1>
+    <div class="divider" style="margin:0.8rem auto 1.2rem;"></div>
+    <p class="big-email">leen.n.refka@gmail.com</p>
+    <div class="socials">
+      <span class="pill">github.com/leen7777</span>
+      <span class="pill">linkedin.com/in/leenrefka</span>
+    </div>
+    <br><br>
+    <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
+      <span class="pill solid">5 Projects</span>
+      <span class="pill solid">2 Hackathon Finals</span>
+      <span class="pill solid">Oracle AI Certified</span>
+      <span class="pill solid">Founder @ Reportra</span>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<nav class="nav">
+  <button id="prev" disabled>←</button>
+  <span id="slideCounter">1 / 10</span>
+  <button id="next">→</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('prev');
+    setTimeout(() => slides[cur].classList.remove('prev'), 500);
+    cur = n;
+    slides[cur].classList.add('active');
+    document.getElementById('slideCounter').textContent = `${cur + 1} / ${slides.length}`;
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === slides.length - 1;
+  }
+
+  document.getElementById('prev').addEventListener('click', () => { if (cur > 0) goTo(cur - 1); });
+  document.getElementById('next').addEventListener('click', () => { if (cur < slides.length - 1) goTo(cur + 1); });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { if (cur < slides.length - 1) goTo(cur + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { if (cur > 0) goTo(cur - 1); }
+  });
+</script>
+</body>
+</html>

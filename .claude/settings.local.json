@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "WebSearch",
-      "WebFetch(domain:dev.to)",
-      "WebFetch(domain:www.gola.supply)"
-    ]
-  }
-}
