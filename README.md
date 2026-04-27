@@ -68,8 +68,8 @@ A complete, responsive personal portfolio web application built with HTML, CSS, 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/leen7777/202359170-leenrefka-assignment1.git
-   ```
+ https://leen7777.github.io/202359170-leenrefka-assignment4/   ```
+ 
 2. Open `index.html` in any modern browser — no build step or server required.
 
 ---
